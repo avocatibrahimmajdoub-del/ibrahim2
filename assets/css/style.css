@@ -2193,27 +2193,45 @@ body.scrolled .site-head { box-shadow: 0 14px 34px -18px rgba(7, 17, 32, 0.45); 
 }
 
 
-/* ---------- barre de confiance : vague dorée ---------- */
-/* Les 4 badges s'illuminent à tour de rôle : l'onde parcourt la
-   barre toutes les 12 s (un badge toutes les 3 s). */
-@keyframes trustGlow {
-  0%, 10%, 100% { color: #414b54; text-shadow: none; }
-  4% { color: var(--gold-2, #a9853f); text-shadow: 0 0 18px rgba(201, 164, 92, 0.45); }
+/* ---------- barre de confiance : défilement continu ---------- */
+/* Piste infinie (contenu cloné par JS) : défile de droite à gauche,
+   en boucle, sans jamais s'arrêter — sauf au survol du curseur. */
+.js .trust-bar .wrap {
+  display: block;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
 
-@keyframes trustIcon {
-  0%, 10%, 100% { transform: scale(1); filter: none; }
-  4% { transform: scale(1.28); filter: drop-shadow(0 0 6px rgba(201, 164, 92, 0.85)); }
+.js .t-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  padding-block: 15px;
+  animation: tMarquee 28s linear infinite;
 }
 
-.js .trust-bar .wrap > span { animation: trustGlow 12s ease-in-out infinite; }
-.js .trust-bar .wrap > span:nth-child(1) { animation-delay: 0s; }
-.js .trust-bar .wrap > span:nth-child(2) { animation-delay: 3s; }
-.js .trust-bar .wrap > span:nth-child(3) { animation-delay: 6s; }
-.js .trust-bar .wrap > span:nth-child(4) { animation-delay: 9s; }
+.js .t-track > span { margin-inline-end: 56px; }
 
-.js .trust-bar .wrap > span svg { animation: trustIcon 12s ease-in-out infinite; }
-.js .trust-bar .wrap > span:nth-child(1) svg { animation-delay: 0s; }
-.js .trust-bar .wrap > span:nth-child(2) svg { animation-delay: 3s; }
-.js .trust-bar .wrap > span:nth-child(3) svg { animation-delay: 6s; }
-.js .trust-bar .wrap > span:nth-child(4) svg { animation-delay: 9s; }
+/* pause uniquement quand le curseur (ou le focus clavier) est sur la barre */
+.js .trust-bar:hover .t-track,
+.js .trust-bar:focus-within .t-track { animation-play-state: paused; }
+
+@keyframes tMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* page arabe (RTL) : défilement inverse, gauche → droite */
+[dir="rtl"] .js .t-track { animation-name: tMarqueeRTL; }
+
+@keyframes tMarqueeRTL {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .t-track { animation: none; width: auto; flex-wrap: wrap; justify-content: center; row-gap: 10px; }
+  .js .t-track > [data-clone] { display: none; }
+  .js .trust-bar .wrap { -webkit-mask-image: none; mask-image: none; }
+}

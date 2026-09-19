@@ -124,6 +124,16 @@
     onHead();
   }
 
+  /* ---------- barre de confiance : piste infinie (clonage) ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".t-track"), function (track) {
+    Array.prototype.slice.call(track.children).forEach(function (el) {
+      var copy = el.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      copy.setAttribute("data-clone", "");
+      track.appendChild(copy);
+    });
+  });
+
   /* ---------- FAQ : une seule réponse ouverte ---------- */
   var faqs = Array.prototype.slice.call(document.querySelectorAll(".faq-list details"));
   faqs.forEach(function (d) {
