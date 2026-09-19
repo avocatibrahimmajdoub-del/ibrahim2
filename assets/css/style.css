@@ -2191,3 +2191,29 @@ body.scrolled .site-head { box-shadow: 0 14px 34px -18px rgba(7, 17, 32, 0.45); 
   display: block;
   border-radius: inherit;
 }
+
+
+/* ---------- barre de confiance : vague dorée ---------- */
+/* Les 4 badges s'illuminent à tour de rôle : l'onde parcourt la
+   barre toutes les 12 s (un badge toutes les 3 s). */
+@keyframes trustGlow {
+  0%, 10%, 100% { color: #414b54; text-shadow: none; }
+  4% { color: var(--gold-2, #a9853f); text-shadow: 0 0 18px rgba(201, 164, 92, 0.45); }
+}
+
+@keyframes trustIcon {
+  0%, 10%, 100% { transform: scale(1); filter: none; }
+  4% { transform: scale(1.28); filter: drop-shadow(0 0 6px rgba(201, 164, 92, 0.85)); }
+}
+
+.js .trust-bar .wrap > span { animation: trustGlow 12s ease-in-out infinite; }
+.js .trust-bar .wrap > span:nth-child(1) { animation-delay: 0s; }
+.js .trust-bar .wrap > span:nth-child(2) { animation-delay: 3s; }
+.js .trust-bar .wrap > span:nth-child(3) { animation-delay: 6s; }
+.js .trust-bar .wrap > span:nth-child(4) { animation-delay: 9s; }
+
+.js .trust-bar .wrap > span svg { animation: trustIcon 12s ease-in-out infinite; }
+.js .trust-bar .wrap > span:nth-child(1) svg { animation-delay: 0s; }
+.js .trust-bar .wrap > span:nth-child(2) svg { animation-delay: 3s; }
+.js .trust-bar .wrap > span:nth-child(3) svg { animation-delay: 6s; }
+.js .trust-bar .wrap > span:nth-child(4) svg { animation-delay: 9s; }
