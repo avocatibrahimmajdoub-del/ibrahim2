@@ -1,28 +1,15 @@
 {
-  "name": "react-vite-tailwind",
+  "name": "lawf",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "description": "Site statique trilingue (FR/EN/AR, RTL) d'un cabinet d'avocat à Tunis — HTML, CSS et JS vanilla, sans build.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "clsx": "2.1.1",
-    "react": "19.2.6",
-    "react-dom": "19.2.6",
-    "tailwind-merge": "3.4.0"
+    "serve": "python3 -m http.server 5173 --bind 0.0.0.0",
+    "check": "node scripts/check.mjs",
+    "images": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.1.17",
-    "@types/node": "22.19.17",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "5.1.1",
-    "tailwindcss": "4.1.17",
-    "typescript": "5.9.3",
-    "vite": "7.3.2",
-    "vite-plugin-singlefile": "2.3.0"
+    "sharp": "^0.35.4"
   }
 }
