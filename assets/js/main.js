@@ -114,8 +114,26 @@
     });
   }
 
+  /* ---------- header : élévation au défilement ---------- */
+  var head = document.querySelector(".site-head");
+  if (head) {
+    var onHead = function () {
+      document.body.classList.toggle("scrolled", window.scrollY > 8);
+    };
+    window.addEventListener("scroll", onHead, { passive: true });
+    onHead();
+  }
+
+  /* ---------- FAQ : une seule réponse ouverte ---------- */
+  var faqs = Array.prototype.slice.call(document.querySelectorAll(".faq-list details"));
+  faqs.forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.open) faqs.forEach(function (o) { if (o !== d) o.open = false; });
+    });
+  });
+
   /* ---------- révélations au scroll ---------- */
-  var revs = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  var revs = Array.prototype.slice.call(document.querySelectorAll(".reveal, .reveal-left, .reveal-pop, .reveal-stagger"));
   if (reduce || !("IntersectionObserver" in window)) {
     revs.forEach(function (el) {
       el.classList.add("in");

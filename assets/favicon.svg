@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="8" fill="#10243e"/>
-  <g stroke="#b08d47" stroke-width="3" stroke-linecap="round" fill="none">
-    <path d="M32 14v34M22 48h20M16 22h32"/>
-    <path d="M32 14l-12 8 6 8 6-8 6 8 6-8z"/>
+  <rect width="64" height="64" rx="14" fill="#0d1b2e"/>
+  <g stroke="#c9a45c" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <circle cx="32" cy="12" r="2.4"/>
+    <path d="M32 14.5v33M25 51h14M15.5 20h33"/>
+    <path d="M15.5 20l-5 10.4M15.5 20l5 10.4M9.2 32.4a6.6 6.6 0 0012.6 0"/>
+    <path d="M48.5 20l-5 10.4M48.5 20l5 10.4M42.2 32.4a6.6 6.6 0 0012.6 0"/>
+    <path d="M32 14.5l-8 4.5M32 14.5l8 4.5"/>
+    <path d="M27 41h10"/>
   </g>
 </svg>
