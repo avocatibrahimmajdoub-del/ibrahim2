@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<!--
+  Sitemap du site (source unique de vérité pour Google Search Console).
+  Le domaine doit être identique à celui des <link rel="canonical">, hreflang,
+  og:url, "url" du JSON-LD, robots.txt et SITE dans scripts/check.mjs.
+  <lastmod> : date du dernier changement de CONTENU de la page (pas de cette
+  date de génération) ; format W3C date-only accepté par Google.
+-->
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
   <url>
     <loc>https://ibrahimmahjoub.netlify.app/</loc>
+    <lastmod>2026-09-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
   </url>
   <url>
     <loc>https://ibrahimmahjoub.netlify.app/en/</loc>
+    <lastmod>2026-09-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
   </url>
   <url>
     <loc>https://ibrahimmahjoub.netlify.app/ar/</loc>
+    <lastmod>2026-09-21</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
