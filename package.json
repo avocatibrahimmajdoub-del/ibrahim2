@@ -1,0 +1,15 @@
+{
+  "name": "lawf",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Site statique trilingue (FR/EN/AR, RTL) d'un cabinet d'avocat à Tunis — HTML, CSS et JS vanilla, sans build.",
+  "scripts": {
+    "serve": "python3 -m http.server 5173 --bind 0.0.0.0",
+    "check": "node scripts/check.mjs",
+    "images": "node scripts/optimize-images.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}
