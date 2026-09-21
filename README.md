@@ -89,6 +89,21 @@ Balises en place : `<title>` ≤ 68 caractères, `meta description` 120–175,
 `og:image` avec `width`/`height`/`alt`, `og:locale` + `og:locale:alternate` par
 langue, JSON-LD parsé et validé par la CI.
 
+### Les visuels portent aussi le nom
+
+`assets/img/office.jpg` (hero) affiche une plaque nominative «إبراهيم المجدوب» et
+`assets/img/og.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
+Cour ». Ces graphies **ne doivent pas être supprimées des images** mais être
+déclarées dans `alternateName`, sinon Google traite l'image comme une entité
+étrangère. Les `alt` décrivent ce que l'image montre réellement (plaque, robe,
+drapeau) et commencent par la graphie canonique — un `alt` qui contredit l'image
+est un signal de spam. `npm run check` exige que ces graphies figurent bien dans
+`alternateName`.
+
+Si un visuel est re-exporté : orthographier `Brahim Majdoub` / `الأستاذ أبراهيم
+المجدوب`, ajouter « Sousse » (la carte actuelle n'indique aucune ville), et
+conserver 1200×630.
+
 Note : depuis août 2023, Google n'affiche plus les résultats enrichis `FAQPage`
 pour les sites non institutionnels — le balisage nourrit la compréhension de
 l'entité, il ne promet pas d'affichage dans la SERP.

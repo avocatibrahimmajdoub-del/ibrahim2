@@ -26,7 +26,12 @@ const SITE = "https://ibrahimmahjoub.netlify.app";
 // texte visible ; les autres variantes ne vivent que dans alternateName (JSON-LD),
 // ou elles servent a rattacher les fautes d'orthographe a la MEME entite.
 const BRAND = { "index.html": "Maître Brahim Majdoub", "en/index.html": "Brahim Majdoub", "ar/index.html": "الأستاذ أبراهيم المجدوب" };
-const FORBIDDEN_VISIBLE = ["Ibrahim Mahjoub", "Brahim Mahjoub", "ابراهيم مجدوب"];
+const FORBIDDEN_VISIBLE = ["Ibrahim Mahjoub", "Brahim Mahjoub", "ابراهيم مجدوب", "المحجوب"];
+
+// Contact : la seule adresse valide. cabinet-majdoub.tn ne resout pas (NXDOMAIN)
+// => tout message poste la-bas rebondit, et Google peut l'afficher dans le panneau local.
+const EMAIL = "avocat.ibrahim.majdoub@gmail.com";
+const DEAD_HOSTS = ["cabinet-majdoub.tn"];
 
 const PAGES = [
   { file: "index.html", lang: "fr", dir: "ltr", path: "/", brand: "Maître Brahim Majdoub" },
@@ -127,6 +132,41 @@ for (const page of PAGES) {
     }
   }
 
+
+  // ---------- contact : rien ne doit pointer sur un domaine mort ----------
+  for (const dead of DEAD_HOSTS)
+    if (html.includes(dead)) fail(`${page.file}: reference au domaine mort ${dead} (les e-mails rebondissent)`);
+
+  const mailtos = [...html.matchAll(/href="mailto:([^"?]+)/g)].map((m) => m[1]);
+  for (const m of new Set(mailtos))
+    if (m !== EMAIL) fail(`${page.file}: mailto « ${m} » ≠ ${EMAIL}`);
+  if (!mailtos.length) fail(`${page.file}: aucun lien mailto`);
+
+  const dataEmail = html.match(/data-email="([^"]*)"/)?.[1];
+  if (dataEmail !== EMAIL) fail(`${page.file}: data-email = ${dataEmail} (composeur e-mail casse)`);
+  if ((html.match(new RegExp(EMAIL.replace(/\./g, "\\."), "g")) || []).length < 4)
+    fail(`${page.file}: ${EMAIL} present <4x (JSON-LD + composeur + coordonnees + pied de page)`);
+
+
+  // ---------- RTL : toute chaine LTR (e-mail, +tel) doit etre isolee ----------
+  // Sans <bdi dir="ltr">, l'algo bidi retourne l'affichage et le copie-colle du
+  // visiteur arabe donne un numero ou une adresse illegibles.
+  if (page.dir === "rtl") {
+    const textSeulement = html
+      .replace(/<bdi[^>]*>[\s\S]*?<\/bdi>/g, " ")
+      .replace(/<script[\s\S]*?<\/script>/g, " ")
+      .replace(/<style[\s\S]*?<\/style>/g, " ")
+      .replace(/<[^>]+>/g, " ");
+    if (textSeulement.includes(EMAIL))
+      fail(`${page.file}: e-mail visible hors <bdi dir="ltr"> (rendu bidi inverse l'affichage)`);
+    if (/\+216\s*\d/.test(textSeulement))
+      fail(`${page.file}: telephone visible hors <bdi dir="ltr">`);
+    if (/\d{2}\s\d{3}\s\d{3}\s*\d{3}\+/.test(html))
+      fail(`${page.file}: numero ecrit a l'envers pour tromper bidi — utiliser <bdi dir="ltr">`);
+    const bdi = (html.match(/<bdi dir="ltr">/g) || []).length;
+    if (bdi < 3) fail(`${page.file}: ${bdi} isolation(s) <bdi> pour 3 coordonnees affichees`);
+  }
+
   // labels appariés
   const fors = [...html.matchAll(/<label[^>]*for="([^"]+)"/g)].map((m) => m[1]);
   for (const f of fors)
@@ -201,10 +241,17 @@ for (const [file, n] of ldNodes) {
     const alias = n.alternateName ?? [];
     if (!alias.includes("Ibrahim Mahjoub")) fail(`${file}: Person.alternateName sans la variante « Mahjoub »`);
     if (alias.length < 8) fail(`${file}: Person.alternateName trop court (${alias.length})`);
+    // la plaque du bureau (office.jpg) et la carte de partage (og.jpg) impriment
+    // leur propre orthographe : declarees ici, elles renforcent l'entite au lieu
+    // de creer une fiche concurrente
+    for (const a of ["إبراهيم المجدوب", "Ibrahim Majdoub"])
+      if (!alias.includes(a)) fail(`${file}: Person.alternateName sans la graphie « ${a} » visible dans les images`);
     if (!n.sameAs?.length) fail(`${file}: Person.sameAs absent (Facebook/LinkedIn = preuve d'entité)`);
     if (n.worksFor?.["@id"] !== [...officeIds][0]) fail(`${file}: Person.worksFor ne pointe pas sur le cabinet`);
     for (const k of ["jobTitle", "memberOf", "alumniOf", "knowsAbout", "telephone"])
       if (!n[k]) fail(`${file}: Person.${k} manquant`);
+    // NAP : l'e-mail du graphe doit etre celui affiche sur la page
+    if (n.email !== EMAIL) fail(`${file}: Person.email = ${n.email} ≠ ${EMAIL}`);
   }
   if (types.includes("LegalService")) {
     if (n.founder?.["@id"] !== [...personIds][0]) fail(`${file}: LegalService.founder ne pointe pas sur l'avocat`);
@@ -214,7 +261,12 @@ for (const [file, n] of ldNodes) {
     for (const a of ["Ibrahim Mahjoub", "الأستاذ أبراهيم المجدوب"])
       if (!lalias.includes(a)) fail(`${file}: LegalService.alternateName sans « ${a} »`);
     if (lalias.length < 8) fail(`${file}: LegalService.alternateName trop court (${lalias.length})`);
+    if (!lalias.includes("إبراهيم المجدوب"))
+      fail(`${file}: LegalService.alternateName sans la graphie de la plaque nominative`);
     if (!n.sameAs?.length) fail(`${file}: LegalService.sameAs absent`);
+    if (n.email !== EMAIL) fail(`${file}: LegalService.email = ${n.email} ≠ ${EMAIL}`);
+    if (n.telephone?.replace(/\D/g, "") !== "21696655238")
+      fail(`${file}: LegalService.telephone = ${n.telephone} incoherent avec le texte visible`);
     if (!n.geo || typeof n.geo.latitude !== "number") fail(`${file}: LegalService.geo absent`);
     if (!n.openingHoursSpecification?.length) fail(`${file}: LegalService.openingHoursSpecification absent`);
     if (!String(n.url).startsWith(SITE)) fail(`${file}: LegalService.url hors ${SITE}`);
