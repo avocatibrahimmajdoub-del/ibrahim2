@@ -22,13 +22,20 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const SITE = "https://ibrahimmahjoub.netlify.app";
 
+// L'entite recherchee par son nom. Une seule graphie doit apparaitre dans le
+// texte visible ; les autres variantes ne vivent que dans alternateName (JSON-LD),
+// ou elles servent a rattacher les fautes d'orthographe a la MEME entite.
+const BRAND = { "index.html": "Maître Brahim Majdoub", "en/index.html": "Brahim Majdoub", "ar/index.html": "الأستاذ أبراهيم المجدوب" };
+const FORBIDDEN_VISIBLE = ["Ibrahim Mahjoub", "Brahim Mahjoub", "ابراهيم مجدوب"];
+
 const PAGES = [
-  { file: "index.html", lang: "fr", dir: "ltr", path: "/" },
-  { file: "en/index.html", lang: "en", dir: "ltr", path: "/en/" },
-  { file: "ar/index.html", lang: "ar", dir: "rtl", path: "/ar/" },
+  { file: "index.html", lang: "fr", dir: "ltr", path: "/", brand: "Maître Brahim Majdoub" },
+  { file: "en/index.html", lang: "en", dir: "ltr", path: "/en/", brand: "Brahim Majdoub" },
+  { file: "ar/index.html", lang: "ar", dir: "rtl", path: "/ar/", brand: "الأستاذ أبراهيم المجدوب" },
 ];
 
 let failures = 0;
+const ldNodes = [];
 const fail = (msg) => {
   failures += 1;
   console.error(`✗ ${msg}`);
@@ -84,6 +91,42 @@ for (const page of PAGES) {
       fail(`${page.file}: type="${m[1]}" pour ${m[2]} (attendu ${mime[ext]})`);
   }
 
+
+  // ---------- SEO marque : le nom doit etre dans le title ET le h1 ----------
+  const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1].trim() ?? "";
+  const desc = html.match(/name="description"\s+content="([^"]*)"/)?.[1] ?? "";
+  const h1 = (html.match(/<h1>[\s\S]*?<\/h1>/)?.[0] ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+  if (!title.startsWith(page.brand)) fail(`${page.file}: <title> ne commence pas par « ${page.brand} »`);
+  if (title.length > 68) fail(`${page.file}: <title> trop long (${title.length} > 68) — tronque en SERP`);
+  if (title.length < 30) fail(`${page.file}: <title> trop court (${title.length})`);
+  if (!h1.includes(page.brand)) fail(`${page.file}: le nom n'apparait pas dans le <h1> (requete de marque perdue)`);
+  if (desc.length < 120 || desc.length > 175) fail(`${page.file}: meta description ${desc.length} car. (viser 120-175)`);
+  if (!desc.includes(page.brand.split(" ").slice(-1)[0])) fail(`${page.file}: meta description sans le nom`);
+  if (!html.includes('property="og:locale:alternate"')) fail(`${page.file}: og:locale:alternate absent`);
+  for (const need of ["og:image:width", "og:image:height", "og:image:alt"])
+    if (!html.includes(need)) fail(`${page.file}: ${need} absent`);
+
+  // graphies concurrentes dans le texte visible (hors JSON-LD) = entite scindee
+  const visible = html.replace(/<script[\s\S]*?<\/script>/g, " ");
+  for (const bad of FORBIDDEN_VISIBLE)
+    if (visible.includes(bad)) fail(`${page.file}: variante « ${bad} » dans le texte visible`);
+  const brandHits = visible.split(page.brand).length - 1;
+  if (brandHits < 2) fail(`${page.file}: « ${page.brand} » ${brandHits}x dans le visible (2+ attendu)`);
+
+  // JSON-LD : blocs parseables, collectes pour la validation du graphe
+  const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+    .map((m) => m[1]);
+  if (ldBlocks.length < 2) fail(`${page.file}: au moins 2 blocs JSON-LD attendus`);
+  for (const [i, raw] of ldBlocks.entries()) {
+    try {
+      const d = JSON.parse(raw);
+      (d["@graph"] ? d["@graph"] : [d]).forEach((n) => ldNodes.push([page.file, n]));
+    } catch (e) {
+      fail(`${page.file}: bloc JSON-LD #${i + 1} invalide — ${e.message}`);
+    }
+  }
+
   // labels appariés
   const fors = [...html.matchAll(/<label[^>]*for="([^"]+)"/g)].map((m) => m[1]);
   for (const f of fors)
@@ -133,6 +176,53 @@ if (sitemapRaw === null) {
       fail(`robots.txt: Sitemap: ${sm[1]} ≠ ${SITE}/sitemap.xml`);
     else ok(`robots.txt (Sitemap: ${sm[1]})`);
   }
+}
+
+ok(`graphe d'entites (${ldNodes.length} noeux, @id commun aux 3 langues)`);
+
+/* ---------- graphe d'entites : 1 noeud par langue, memes @id partout ---------- */
+
+const byType = (t) => ldNodes.filter(([, n]) => [].concat(n["@type"] ?? []).includes(t));
+for (const t of ["WebSite", "LegalService"]) {
+  const found = byType(t);
+  if (found.length !== PAGES.length) fail(`${t}: ${found.length} noeux pour ${PAGES.length} pages`);
+}
+const persons = byType("Person");
+if (persons.length !== PAGES.length) fail(`Person: ${persons.length} noeux pour ${PAGES.length} pages`);
+
+const officeIds = new Set(byType("LegalService").map(([, n]) => n["@id"]));
+const personIds = new Set(persons.map(([, n]) => n["@id"]));
+if (officeIds.size !== 1) fail(`LegalService: @id non partagé entre les langues (${[...officeIds]})`);
+if (personIds.size !== 1) fail(`Person: @id non partagé entre les langues (${[...personIds]})`);
+
+for (const [file, n] of ldNodes) {
+  const types = [].concat(n["@type"] ?? []);
+  if (types.includes("Person")) {
+    const alias = n.alternateName ?? [];
+    if (!alias.includes("Ibrahim Mahjoub")) fail(`${file}: Person.alternateName sans la variante « Mahjoub »`);
+    if (alias.length < 8) fail(`${file}: Person.alternateName trop court (${alias.length})`);
+    if (!n.sameAs?.length) fail(`${file}: Person.sameAs absent (Facebook/LinkedIn = preuve d'entité)`);
+    if (n.worksFor?.["@id"] !== [...officeIds][0]) fail(`${file}: Person.worksFor ne pointe pas sur le cabinet`);
+    for (const k of ["jobTitle", "memberOf", "alumniOf", "knowsAbout", "telephone"])
+      if (!n[k]) fail(`${file}: Person.${k} manquant`);
+  }
+  if (types.includes("LegalService")) {
+    if (n.founder?.["@id"] !== [...personIds][0]) fail(`${file}: LegalService.founder ne pointe pas sur l'avocat`);
+    // le cabinet porte aussi les graphies concurrentes : c'est lui que Google
+    // matche sur « Ibrahim Mahjoub avocat Sousse »
+    const lalias = n.alternateName ?? [];
+    for (const a of ["Ibrahim Mahjoub", "الأستاذ أبراهيم المجدوب"])
+      if (!lalias.includes(a)) fail(`${file}: LegalService.alternateName sans « ${a} »`);
+    if (lalias.length < 8) fail(`${file}: LegalService.alternateName trop court (${lalias.length})`);
+    if (!n.sameAs?.length) fail(`${file}: LegalService.sameAs absent`);
+    if (!n.geo || typeof n.geo.latitude !== "number") fail(`${file}: LegalService.geo absent`);
+    if (!n.openingHoursSpecification?.length) fail(`${file}: LegalService.openingHoursSpecification absent`);
+    if (!String(n.url).startsWith(SITE)) fail(`${file}: LegalService.url hors ${SITE}`);
+  }
+  // toute URL interne doit coller au domaine canonique
+  for (const [, u] of JSON.stringify(n).matchAll(/"(?:url|image|logo|telephone)":\s*"((?:https?:)[^"]+)"/g))
+    if (!String(u).startsWith(SITE) && !u.startsWith("https://www.openstreetmap.org"))
+      fail(`${file}: URL structurée hors domaine canonique — ${u}`);
 }
 
 if (failures) {
