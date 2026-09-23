@@ -24,9 +24,89 @@ npm run serve          # http://localhost:5173  (python3 -m http.server)
 ```
 
 N'importe quel hébergement statique fonctionne (CDN, objet storage, Apache,
-nginx…) : copiez le dépôt tel quel. Conservez la structure `/`, `/en/`, `/ar/`
-et remplacez `https://www.cabinet-majdoub.tn` (utilisé dans canonical, hreflang,
-sitemap et JSON-LD) par le domaine réel.
+nginx…) : copiez le dépôt tel quel. Conservez la structure `/`, `/en/`, `/ar/`.
+
+## SEO : le nom de l'avocat doit être l'entité, pas un détail
+
+Deux règles verrouillées par `npm run check`.
+
+### 1. Une seule origine : le domaine canonique
+
+L'URL d'origine est `https://ibrahimmahjoub.netlify.app`. Elle doit être
+**identique** dans les 7 endroits suivants, sinon Google crawle un hôte qui ne
+répond pas (c'est le bug qui a empêché l'indexation) :
+
+`<link rel="canonical">` · les 4 `<link rel="alternate" hreflang>` · `og:url` ·
+`"url"` et `"@id"` du JSON-LD · `<loc>` et `xhtml:link` de `sitemap.xml` ·
+`Sitemap:` de `robots.txt` · la constante `SITE` de `scripts/check.mjs`.
+
+### 2. Une seule graphie du nom dans le texte visible
+
+| Langue | Graphie canonique (visible) |
+| --- | --- |
+| FR | `Maître Brahim Majdoub` |
+| EN | `Brahim Majdoub` |
+| AR | `الأستاذ أبراهيم المجدوب` |
+
+Les autres orthographes (`Ibrahim Mahjoub`, `ابراهيم مجدوب`, `إبراهيم المجدوب`…)
+n'apparaissent **que** dans `Person.alternateName` / `LegalService.alternateName`
+du JSON-LD : c'est ce qui permet à Google de rattacher ces recherches à la même
+entité au lieu de créer deux fiches concurrentes. Le test échoue si une variante
+revient dans le texte visible (elle scinde l'entité et le nom ne remonte plus).
+
+Le nom doit aussi figurer **en tête du `<title>` et dans le `<h1>`** — un slogan
+seul dans le `h1` ne répond à aucune recherche de marque.
+
+### Le graphe d'entités
+
+Chaque langue déclare le même graphe (`@graph`), avec des `@id` **communs aux 3
+pages** — c'est ce qui fusionne FR/EN/AR en une seule entité au lieu de trois :
+
+- `WebSite` `#site` → `publisher` vers le cabinet ;
+- `LegalService` `#cabinet` : adresse, `geo`, `hasMap`, `openingHoursSpecification`,
+  `areaServed`, `knowsAbout`, `sameAs`, `founder` → `#avocat` ;
+- `Person` + `Attorney` `#avocat` : `jobTitle`, `memberOf` (Barreau), `alumniOf`,
+  `worksFor` → `#cabinet`, `alternateName` (toutes les graphies), `sameAs` ;
+- `FAQPage` séparé, aligné sur les questions réellement visibles.
+
+Modifier un numéro, une adresse ou un nom : les 3 pages **et** le JSON-LD doivent
+changer ensemble, puis mettre à jour la même fiche côté Google Business Profile.
+
+### En dehors du dépôt (indispensable pour la recherche par nom)
+
+Le site seul ne suffit pas : Google relie les sources entre elles.
+
+1. **Google Business Profile** vérifié, nom exact `Maître Brahim Majdoub`,
+   catégorie « Avocat », ville Sousse — c'est ce qui déclenche le panneau de
+   connaissances et la carte sur une recherche de nom.
+2. **Mêmes NAP** (nom, adresse, téléphone) partout : Facebook, annuaires
+   d'avocats, mentions légales. Une variante suffit pour tout diluer.
+3. La page **Facebook** est déjà déclarée en `sameAs` : le nom de la page doit
+   correspondre, sinon le lien n'apporte rien.
+4. Bump du cache-busting (`?v=`) si `assets/img/og.jpg` change de contenu.
+
+Balises en place : `<title>` ≤ 68 caractères, `meta description` 120–175,
+`og:image` avec `width`/`height`/`alt`, `og:locale` + `og:locale:alternate` par
+langue, JSON-LD parsé et validé par la CI.
+
+### Les visuels portent aussi le nom
+
+`assets/img/office.jpg` (hero) affiche une plaque nominative «إبراهيم المجدوب» et
+`assets/img/og.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
+Cour ». Ces graphies **ne doivent pas être supprimées des images** mais être
+déclarées dans `alternateName`, sinon Google traite l'image comme une entité
+étrangère. Les `alt` décrivent ce que l'image montre réellement (plaque, robe,
+drapeau) et commencent par la graphie canonique — un `alt` qui contredit l'image
+est un signal de spam. `npm run check` exige que ces graphies figurent bien dans
+`alternateName`.
+
+Si un visuel est re-exporté : orthographier `Brahim Majdoub` / `الأستاذ أبراهيم
+المجدوب`, ajouter « Sousse » (la carte actuelle n'indique aucune ville), et
+conserver 1200×630.
+
+Note : depuis août 2023, Google n'affiche plus les résultats enrichis `FAQPage`
+pour les sites non institutionnels — le balisage nourrit la compréhension de
+l'entité, il ne promet pas d'affichage dans la SERP.
 
 ## Modifier le contenu
 
