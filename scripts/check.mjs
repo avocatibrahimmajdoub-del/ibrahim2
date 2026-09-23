@@ -4,6 +4,7 @@
  *  - chaque page référence les 3 hreflang + x-default + canonical ;
  *  - aucune ancre interne cassée (href="#x" sans id="#x") ;
  *  - aucun chemin local cassé (src/href vers /assets/…) ;
+ *  - aucune URL absolue href/content vers un autre *.netlify.app ou un *.tn ;
  *  - chaque champ de formulaire reste labellisé (for/id appariés) ;
  *  - sitemap.xml et robots.txt sont cohérents avec le SITE et les canonical.
  *
@@ -20,7 +21,16 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const SITE = "https://ibrahimmahjoub.netlify.app";
+const SITE = "https://ibrahimmajdoub.netlify.app";
+
+// L'hote canonique est DERIVE de SITE, jamais recopie : quand les deux divergent
+// (l'ancienne graphie « mahjoub » vivait ici en dur), le controle s'auto-blanchit
+// et laisse passer l'hote mort au lieu de le denoncer.
+const SITE_HOST = new URL(SITE).host;
+const SITE_ORIGIN_RE = SITE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// Hotes interdits : tout autre *.netlify.app (apercu de branche, ancien nom de
+// site) et tout *.tn (les domaines .tn cites dans l'historique ne resolvent pas).
+const FOREIGN_HOST_RE = /(?:^|\.)(?:netlify\.app|tn)$/i;
 
 // L'entite recherchee par son nom. Une seule graphie doit apparaitre dans le
 // texte visible ; les autres variantes ne vivent que dans alternateName (JSON-LD),
@@ -70,8 +80,26 @@ for (const page of PAGES) {
     const want = `href="${SITE}${p.path}"`;
     if (!html.includes(want)) fail(`${page.file}: hreflang sans ${SITE}${p.path}`);
   }
-  if (/(?:href|content)="https:\/\/(?!ibrahimmahjoub\.netlify\.app)[^"]*\.tn\//.test(html))
-    fail(`${page.file}: URL absolue vers un autre hôte (domaine non résolu ?)`);
+  // Toute URL absolue portée par href/content doit viser SITE (ou un tiers
+  // légitime : Facebook, OpenStreetMap, Google Fonts…). Un autre *.netlify.app
+  // (aperçu de branche, ancien nom de site) ou un *.tn enverrait le visiteur et
+  // le crawler sur un hôte qui n'est pas le canonique. L'hôte de référence est
+  // dérivé de SITE : impossible qu'un renommage du site laisse ce contrôle
+  // comparer les URLs à l'ancienne graphie.
+  const absolues = [...html.matchAll(/(?:href|content)="(https?:\/\/[^"]*)"/g)].map((m) => m[1]);
+  for (const url of new Set(absolues)) {
+    let host;
+    try {
+      host = new URL(url).host;
+    } catch {
+      fail(`${page.file}: URL absolue illisible — ${url}`);
+      continue;
+    }
+    if (host !== SITE_HOST && FOREIGN_HOST_RE.test(host))
+      fail(`${page.file}: URL absolue vers un autre hôte — ${url} (attendu ${SITE_HOST})`);
+    if (host === SITE_HOST && !new RegExp(`^${SITE_ORIGIN_RE}`).test(url))
+      fail(`${page.file}: URL absolue vers SITE sans https — ${url}`);
+  }
 
   // ancres internes
   const anchors = [...html.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);

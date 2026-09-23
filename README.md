@@ -32,7 +32,7 @@ Deux règles verrouillées par `npm run check`.
 
 ### 1. Une seule origine : le domaine canonique
 
-L'URL d'origine est `https://ibrahimmahjoub.netlify.app`. Elle doit être
+L'URL d'origine est `https://ibrahimmajdoub.netlify.app`. Elle doit être
 **identique** dans les 7 endroits suivants, sinon Google crawle un hôte qui ne
 répond pas (c'est le bug qui a empêché l'indexation) :
 

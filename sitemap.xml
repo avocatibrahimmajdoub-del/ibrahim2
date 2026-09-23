@@ -14,50 +14,50 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
 >
   <url>
-    <loc>https://ibrahimmahjoub.netlify.app/</loc>
+    <loc>https://ibrahimmajdoub.netlify.app/</loc>
     <lastmod>2026-09-23</lastmod>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/" />
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/office.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/office.jpg</image:loc>
         <image:title>Maître Brahim Majdoub, avocat au Barreau de Sousse, à son bureau — plaque nominative « إبراهيم المجدوب », balance de la justice et rayonnage juridique</image:title>
       </image:image>
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/portrait.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/portrait.jpg</image:loc>
         <image:title>Portrait de Maître Brahim Majdoub, avocat au Barreau de Sousse, en costume devant une bibliothèque</image:title>
       </image:image>
   </url>
   <url>
-    <loc>https://ibrahimmahjoub.netlify.app/en/</loc>
+    <loc>https://ibrahimmajdoub.netlify.app/en/</loc>
     <lastmod>2026-09-23</lastmod>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/" />
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/office.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/office.jpg</image:loc>
         <image:title>Brahim Majdoub, attorney at the Sousse Bar, at his desk — Arabic nameplate “إبراهيم المجدوب”, scales of justice and law shelves</image:title>
       </image:image>
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/portrait.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/portrait.jpg</image:loc>
         <image:title>Portrait of Brahim Majdoub, attorney at the Sousse Bar, in front of a bookshelf</image:title>
       </image:image>
   </url>
   <url>
-    <loc>https://ibrahimmahjoub.netlify.app/ar/</loc>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/</loc>
     <lastmod>2026-09-23</lastmod>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmahjoub.netlify.app/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmahjoub.netlify.app/en/" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmahjoub.netlify.app/ar/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/" />
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/office.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/office.jpg</image:loc>
         <image:title>الأستاذ أبراهيم المجدوب، محامٍ لدى الاستئناف بسوسة، في مكتبه — لوحة الاسم «إبراهيم المجدوب» وميزان العدالة ومكتبة قانونية</image:title>
       </image:image>
       <image:image>
-        <image:loc>https://ibrahimmahjoub.netlify.app/assets/img/portrait.jpg</image:loc>
+        <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/portrait.jpg</image:loc>
         <image:title>صورة للأستاذ أبراهيم المجدوب، محامٍ بسوسة، أمام مكتبة قانونية</image:title>
       </image:image>
   </url>
