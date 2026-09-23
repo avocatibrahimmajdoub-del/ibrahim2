@@ -1,7 +1,10 @@
 # Site 100 % statique : aucun build, on publie la racine du dépôt.
+# install = "" court-circuite `npm install` : sans build, installer sharp (les
+# seuls « node_modules » du dépôt) ne sert à rien et allonge chaque déploiement.
 [build]
   command = ""
   publish = "."
+  install = ""
 
 # Netlify sert automatiquement /en/ et /ar/ (pretty URLs) —
 # ces redirections couvrent les variantes sans slash final.

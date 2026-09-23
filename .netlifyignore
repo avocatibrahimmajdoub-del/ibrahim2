@@ -1,0 +1,9 @@
+# Fichiers exclus du déploiement Netlify (rien de tout ceci n'est servi :
+# le site est du HTML/CSS/JS statique à la racine).
+node_modules
+assets/original
+scripts
+package.json
+package-lock.json
+README.md
+.github
