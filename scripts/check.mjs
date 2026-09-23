@@ -33,6 +33,9 @@ const FORBIDDEN_VISIBLE = ["Ibrahim Mahjoub", "Brahim Mahjoub", "ابراهيم 
 const EMAIL = "avocat.ibrahim.majdoub@gmail.com";
 const DEAD_HOSTS = ["cabinet-majdoub.tn"];
 
+const FB = "https://www.facebook.com/brahim.majdoub.7/";
+const PHONE = "21696655238";
+
 const PAGES = [
   { file: "index.html", lang: "fr", dir: "ltr", path: "/", brand: "Maître Brahim Majdoub" },
   { file: "en/index.html", lang: "en", dir: "ltr", path: "/en/", brand: "Brahim Majdoub" },
@@ -177,7 +180,8 @@ for (const page of PAGES) {
 
 /* ---------- sitemap.xml / robots.txt ---------- */
 
-const sitemapRaw = await readFile(path.join(root, "sitemap.xml"), "utf8").catch(() => null);
+const sitemapRawForDate = await readFile(path.join(root, "sitemap.xml"), "utf8").catch(() => "");
+const sitemapRaw = sitemapRawForDate;
 if (sitemapRaw === null) {
   fail("sitemap.xml introuvable à la racine");
 } else {
@@ -205,6 +209,27 @@ if (sitemapRaw === null) {
   }
 
   ok(`sitemap.xml (${locs.length} URLs, ${blocks.length} blocs avec alternates + lastmod)`);
+
+  // extension image: les <image:loc> doivent pointer sur un fichier reel, et le
+  // <image:title> doit correspondre a un alt affiche (sinon entree ignoree / erreur)
+  const pagesHtml = {};
+  for (const p of PAGES) pagesHtml[p.file] = await readFile(path.join(root, p.file), "utf8");
+
+  const imgs = [...sitemapRaw.matchAll(/<image:image>([\s\S]*?)<\/image:image>/g)].map((m) => m[1]);
+  for (const b of imgs) {
+    const loc = b.match(/<image:loc>([^<]+)<\/image:loc>/)?.[1].trim();
+    const ttl = b.match(/<image:title>([\s\S]*?)<\/image:title>/)?.[1].trim();
+    if (!loc) { fail("sitemap.xml: <image:image> sans <image:loc>"); continue; }
+    if (!loc.startsWith(`${SITE}/`)) fail(`sitemap.xml: <image:loc> hors domaine — ${loc}`);
+    const rel = "/" + loc.slice(SITE.length + 1).split("?")[0];
+    try { await readFile(path.join(root, rel), null); }
+    catch { fail(`sitemap.xml: image introuvable ${rel}`); }
+    if (!ttl) fail(`sitemap.xml: <image:title> manquant pour ${loc}`);
+    else if (!Object.values(pagesHtml).some((h) => h.replace(/\s+/g, " ").includes(ttl)))
+      fail(`sitemap.xml: <image:title> absent des alt des pages — "${ttl.slice(0, 48)}…"`);
+  }
+  if (imgs.length) ok(`sitemap.xml: ${imgs.length} <image:image> declarees (fichiers + alt verifices)`);
+
 
   const robots = await readFile(path.join(root, "robots.txt"), "utf8").catch(() => null);
   if (robots === null) fail("robots.txt introuvable à la racine");
@@ -265,7 +290,7 @@ for (const [file, n] of ldNodes) {
       fail(`${file}: LegalService.alternateName sans la graphie de la plaque nominative`);
     if (!n.sameAs?.length) fail(`${file}: LegalService.sameAs absent`);
     if (n.email !== EMAIL) fail(`${file}: LegalService.email = ${n.email} ≠ ${EMAIL}`);
-    if (n.telephone?.replace(/\D/g, "") !== "21696655238")
+    if (n.telephone?.replace(/\D/g, "") !== PHONE)
       fail(`${file}: LegalService.telephone = ${n.telephone} incoherent avec le texte visible`);
     if (!n.geo || typeof n.geo.latitude !== "number") fail(`${file}: LegalService.geo absent`);
     if (!n.openingHoursSpecification?.length) fail(`${file}: LegalService.openingHoursSpecification absent`);
@@ -276,6 +301,62 @@ for (const [file, n] of ldNodes) {
     if (!String(u).startsWith(SITE) && !u.startsWith("https://www.openstreetmap.org"))
       fail(`${file}: URL structurée hors domaine canonique — ${u}`);
 }
+
+
+/* ---------- SEO avance : robots, rel=me, WebPage, catalogue de services ---------- */
+
+const lastmod = [...sitemapRawForDate.matchAll(/<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/g)].map((m) => m[1]);
+
+for (const page of PAGES) {
+  const html = await readFile(path.join(root, page.file), "utf8");
+
+  const robots = html.match(/<meta name="robots" content="([^"]+)"/)?.[1];
+  if (!robots) fail(`${page.file}: <meta name="robots"> absent`);
+  else {
+    if (!/index/.test(robots)) fail(`${page.file}: <meta name="robots"> sans index`);
+    if (!robots.includes("max-image-preview:large")) fail(`${page.file}: max-image-preview:large absent (image de SERP bridee)`);
+  }
+  if (!html.includes(`<link rel="me" href="${FB}" />`))
+    fail(`${page.file}: rel="me" vers le profil Facebook absent (passerelle d'entite)`);
+
+  // le catalogue declare doit etre exactement la liste des cartes affichees
+  const sec = html.match(/id="services"([\s\S]*?)id="cabinet"/)?.[1] ?? "";
+  const h3 = [...sec.matchAll(/<h3>([^<]+)<\/h3>/g)].map((m) => m[1].replace(/&amp;/g, "&").trim());
+  const svc = byType("LegalService").find(([fn]) => fn === page.file)?.[1];
+  if (!svc) fail(`${page.file}: aucun LegalService pour cette page`);
+  else {
+    const declared = svc.serviceType ?? [];
+    if (declared.length !== h3.length)
+      fail(`${page.file}: serviceType ${declared.length} entrees pour ${h3.length} cartes affichees`);
+    for (const t of h3) if (!declared.includes(t)) fail(`${page.file}: service « ${t} » affichee mais non declaree`);
+    const cat = svc.hasOfferCatalog?.itemListElement ?? [];
+    if (cat.length !== h3.length) fail(`${page.file}: hasOfferCatalog ${cat.length} offres ≠ ${h3.length} cartes`);
+    for (const it of cat) if (!it.itemOffered?.name || !h3.includes(it.itemOffered.name))
+      fail(`${page.file}: offre du catalogue hors liste affichee (${it.itemOffered?.name})`);
+    if (svc.contactPoint?.telephone?.replace(/\D/g, "") !== PHONE)
+      fail(`${page.file}: contactPoint.telephone ≠ +${PHONE}`);
+    if (!(svc.contactPoint?.availableLanguage?.length >= 3)) fail(`${page.file}: contactPoint.availableLanguage incomplet`);
+  }
+
+  // WebPage : dateModified DOIT egaler le <lastmod> du sitemap (anti-derive)
+  const wp = byType("WebPage").find(([fn]) => fn === page.file)?.[1];
+  if (!wp) fail(`${page.file}: noeud WebPage absent`);
+  else {
+    if (wp.url !== `${SITE}${page.path}`) fail(`${page.file}: WebPage.url = ${wp.url}`);
+    if (wp.inLanguage !== page.lang) fail(`${page.file}: WebPage.inLanguage = ${wp.inLanguage}`);
+    if (!lastmod.includes(wp.dateModified))
+      fail(`${page.file}: WebPage.dateModified ${wp.dateModified} absent du <lastmod> du sitemap (a resynchroniser)`);
+    for (const k of ["isPartOf", "about", "mainEntity", "primaryImageOfPage"])
+      if (!wp[k]) fail(`${page.file}: WebPage.${k} manquant`);
+    const img = wp.primaryImageOfPage?.url;
+    if (img && !img.startsWith(SITE)) fail(`${page.file}: primaryImageOfPage hors domaine — ${img}`);
+    const ids = new Set(ldNodes.map(([, n]) => n["@id"]));
+    for (const ref of [wp.isPartOf?.["@id"], wp.mainEntity?.["@id"], ...(Array.isArray(wp.about) ? wp.about : [wp.about]).map((a) => a?.["@id"])])
+      if (ref && !ids.has(ref)) fail(`${page.file}: WebPage pointe vers un @id inexistant (${ref})`);
+  }
+}
+
+ok(`SEO avance (robots max-image-preview, rel=me, serviceType = cartes affichees, dateModified = lastmod)`);
 
 if (failures) {
   console.error(`\n${failures} échec(s)`);
