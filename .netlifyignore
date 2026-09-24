@@ -2,6 +2,8 @@
 # le site est du HTML/CSS/JS statique à la racine).
 node_modules
 assets/original
+gbp
+AUDIT-SEO.md
 scripts
 package.json
 package-lock.json
