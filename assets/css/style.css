@@ -1071,6 +1071,7 @@ button {
 
 .info-list {
   border-top: 1px solid var(--line);
+  margin: 1em 0; /* le conteneur est un <div> : conserve la marge UA de l'ancien <dl> (rendu inchangé) */
 }
 
 .info-list > div {
@@ -1078,6 +1079,10 @@ button {
   gap: 15px;
   padding: 18px 0;
   border-bottom: 1px solid var(--line);
+}
+
+.info-list > div > dl {
+  margin: 0; /* neutralise la marge UA (1em) du <dl> par ligne : rendu inchangé */
 }
 
 .info-list svg {
