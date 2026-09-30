@@ -46,13 +46,26 @@ répond pas (c'est le bug qui a empêché l'indexation) :
 | --- | --- |
 | FR | `Maître Brahim Majdoub` |
 | EN | `Brahim Majdoub` |
-| AR | `الأستاذ أبراهيم المجدوب` |
+| AR | `المحامي الاستاذ ابراهيم المجدوب` |
 
-Les autres orthographes (`Ibrahim Mahjoub`, `ابراهيم مجدوب`, `إبراهيم المجدوب`…)
+Les autres orthographes (`Ibrahim Mahjoub`, `ابراهيم مجدوب`, `إبراهيم المجدوب`,
+`الأستاذ أبراهيم المجدوب`, `المحامي الأستاذ أبراهيم المجدوب`…)
 n'apparaissent **que** dans `Person.alternateName` / `LegalService.alternateName`
 du JSON-LD : c'est ce qui permet à Google de rattacher ces recherches à la même
 entité au lieu de créer deux fiches concurrentes. Le test échoue si une variante
 revient dans le texte visible (elle scinde l'entité et le nom ne remonte plus).
+
+> **Pourquoi deux titres et pas de hamza (30/09/2026).** Le nom arabe est passé de
+> `الأستاذ أبراهيم المجدوب` à `المحامي الاستاذ ابراهيم المجدوب`, pour reprendre mot
+> pour mot le nom de la fiche Google Business Profile. Il s'écrit **sans hamza** :
+> c'est la frappe réelle des recherches tunisiennes (« محامي استاذ ابراهيم المجدوب »)
+> et la graphie de la fiche. Les variantes accentuées (`المحامي الأستاذ أبراهيم
+> المجدوب`, `الأستاذ أبراهيم المجدوب`) restent déclarées en `alternateName` sur les
+> 3 pages — l'entité reste donc unique, et `npm run check` refuse qu'elles
+> disparaissent du graphe. Même règle pour le nom du cabinet sur la page AR :
+> `مكتب ابراهيم المجدوب للمحاماة` (sans hamza) dans le visible, l'écriture
+> accentuée `مكتب أبراهيم المجدوب للمحاماة` en `alternateName`. Le test échoue
+> désormais si `أبراهيم` réapparaît dans le texte visible d'une page.
 
 Le nom doit aussi figurer **en tête du `<title>` et dans le `<h1>`** — un slogan
 seul dans le `h1` ne répond à aucune recherche de marque.
@@ -76,11 +89,22 @@ changer ensemble, puis mettre à jour la même fiche côté Google Business Prof
 
 Le site seul ne suffit pas : Google relie les sources entre elles.
 
-1. **Google Business Profile** vérifié, nom exact `Maître Brahim Majdoub`,
-   catégorie « Avocat », ville Sousse — c'est ce qui déclenche le panneau de
-   connaissances et la carte sur une recherche de nom.
+1. **Google Business Profile** vérifié, nom exact
+   `avocat ibrahim majdoub - المحامي الاستاذ ابراهيم مجدوب`, catégorie « Avocat »,
+   ville Sousse — c'est ce qui déclenche le panneau de connaissances et la carte
+   sur une recherche de nom. Renommage et procédure : `AUDIT-SEO.md` (Priorité 0,
+   lignes 1 et 5). Ce nom doit rester **strictement identique** à la graphie
+   canonique AR du site.
 2. **Mêmes NAP** (nom, adresse, téléphone) partout : Facebook, annuaires
    d'avocats, mentions légales. Une variante suffit pour tout diluer.
+   Adresse de référence (immeuble **محجوب** / Mahjoub, pas المجدوب — vérifié par
+   `npm run check`) :
+
+   | Langue | Adresse |
+   | --- | --- |
+   | FR | `Rue Victor Hugo — Immeuble Mahjoub, 4ᵉ étage — Sousse, Tunisie` |
+   | EN | `Rue Victor Hugo — Mahjoub Building, 4th floor — Sousse, Tunisia` |
+   | AR | `نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع — سوسة، الجمهورية التونسية` |
 3. La page **Facebook** est déjà déclarée en `sameAs` : le nom de la page doit
    correspondre, sinon le lien n'apporte rien.
 4. Bump du cache-busting (`?v=`) si `assets/img/og.jpg` change de contenu.
@@ -100,8 +124,8 @@ drapeau) et commencent par la graphie canonique — un `alt` qui contredit l'ima
 est un signal de spam. `npm run check` exige que ces graphies figurent bien dans
 `alternateName`.
 
-Si un visuel est re-exporté : orthographier `Brahim Majdoub` / `الأستاذ أبراهيم
-المجدوب`, ajouter « Sousse » (la carte actuelle n'indique aucune ville), et
+Si un visuel est re-exporté : orthographier `Brahim Majdoub` / `المحامي الاستاذ
+ابراهيم المجدوب`, ajouter « Sousse » (la carte actuelle n'indique aucune ville), et
 conserver 1200×630.
 
 Note : depuis août 2023, Google n'affiche plus les résultats enrichis `FAQPage`

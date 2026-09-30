@@ -1,5 +1,5 @@
 # Audit SEO — Cabinet Maître Brahim Majdoub
-*Date : 24 septembre 2026 — périmètre : `/`, `/en/`, `/ar/`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
+*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google) — périmètre : `/`, `/en/`, `/ar/`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
 
 ## Verdict global
 
@@ -24,7 +24,7 @@ Le vrai potentiel de croissance n'est **pas** dans le code : il est dans le **SE
 3. **robots.txt / sitemap.xml propres** : sitemap avec alternates `xhtml:link`, extension `image:image` dont les titres reprennent les alt (recherche d'images marque + visage).
 4. **JSON-LD très complet et valide** (vérifié par parseur) : graphe `LegalService` ↔ `Person/Attorney` ↔ `WebSite` ↔ `WebPage`, géo, horaires, `knowsLanguage`, `alternateName` couvrant les variantes orthographiques du nom (Majdoub/Mahjoub, أبراهيم/إبراهيم…) — très utile pour la résolution d'entité Google. `FAQPage` conforme au contenu visible.
 5. **Balises de partage complètes** : OG + Twitter Cards + `og:locale` alternates, image OG déclarée 1200×630 (dimensions réelles conformes).
-6. **Titles et descriptions calibrés** : FR 64 car. / 155 car., EN 60 / 147, AR 61 / 150 — dans les plages optimales, requête « avocat + Sousse » en tête du title.
+6. **Titles et descriptions calibrés** : FR 64 car. / 155 car., EN 60 / 147, AR 68 / 158 — dans les plages optimales, requête « avocat + Sousse » en tête du title. *(AR passé de 61 à 68 car. le 30/09/2026 : l'ajout du titre « المحامي الاستاذ » a imposé de retirer le tanwīn de `محامٍ` pour rester sous la barre des 68 — la CI refuse au-delà.)*
 7. **Sémantique HTML** : 1 seul `<h1>` par page, hiérarchie H1→H2→H3 nette, NAP visible (adresse, tél, e-mail, horaires) en texte indexable.
 8. **Images : WebP + repli JPEG, ~50–90 ko, dimensions déclarées** (aucun CLS), `alt` descriptifs, lazy-load hors écran, `fetchpriority="high"` sur le visuel hero.
 9. **Poids maîtrisé** : CSS 41 ko + JS 7 ko, images optimisées par pipeline sharp — le site passera les Core Web Vitals sans effort.
@@ -40,11 +40,66 @@ C'est le canal qui rapportera de vrais clients à un avocat de Sousse ; le site 
 
 | # | Action | Impact estimé |
 |---|---|---|
-| 1 | ✅ **FAIT (24/09/2026)** — fiche Google Business Profile créée, nom officiel : `avocat ibrahim majdoub - المحامي إبراهيم مجدوب` (bilingue avec tiret, format supporté par Google — ne plus le modifier après vérification). Reste : optimisation à 100 % (catégorie, horaires, photos, description) + transmission de l'URL Maps pour le point 5. 80 % des recherches « avocat près de moi » se décident dans le pack local. | Très fort |
+| 1 | ✅ **FAIT (24/09/2026)** — fiche Google Business Profile créée, nom officiel : `avocat ibrahim majdoub - المحامي إبراهيم مجدوب` (bilingue avec tiret, format supporté par Google). 🔁 **À RENOMMER + ADRESSE À CORRIGER (30/09/2026)** → nom `avocat ibrahim majdoub - المحامي الاستاذ ابراهيم مجدوب`, adresse `نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع` : procédure détaillée ci-dessous. Reste : optimisation à 100 % (catégorie, horaires, photos, description) + transmission de l'URL Maps pour le point 5. 80 % des recherches « avocat près de moi » se décident dans le pack local. | Très fort |
 | 2 | **Récolter des avis Google réels** (lien de partage d'avis envoyé après chaque dossier clos). Les témoignages actuels, marqués « illustratifs », ne comptent pour rien. Remplacer ensuite les gabarits par des avis réels (avec consentement écrit, comme prévu). | Très fort |
 | 3 | **Domaine dédié** (ex. `majdoub-avocat.tn` ou `.com`) plutôt que `ibrahimmajdoub.netlify.app` : confiance, mémorabilité, autorité consolidée, cohérence NAP. Mettre à jour les 7 occurrences verrouillées par `check.mjs` (canonical, hreflang, og:url, JSON-LD, sitemap, robots, SITE) + redirections 301. | Fort (moyen terme) |
-| 4 | **Citations NAP cohérentes** : annuaire de l'Ordre National des Avocats de Tunisie, Pages Jaunes Tunisie, annuaires d'avocats tunisiens — nom/adresse/tél **strictement identiques** partout. | Fort (local) |
-| 5 | 🔧 **Partiellement fait (24/09/2026)** : le nom bilingue de la fiche est intégré aux `alternateName` JSON-LD des 3 pages. Reste : ajouter l'URL Google Maps dans `sameAs` et `hasMap` du JSON-LD — *(en attente de l'URL « Partager » de la fiche).* | Bonus |
+| 4 | **Citations NAP cohérentes** : annuaire de l'Ordre National des Avocats de Tunisie, Pages Jaunes Tunisie, annuaires d'avocats tunisiens — nom/adresse/tél **strictement identiques** partout, y compris l'immeuble (`عمارة محجوب`, pas `عمارة المجدوب`). | Fort (local) |
+| 5 | 🔧 **Partiellement fait (24/09/2026, étendu le 30/09/2026)** : le nom bilingue de la fiche est intégré aux `alternateName` JSON-LD des 3 pages, dans **les deux graphies du nouveau titre** (`المحامي الاستاذ ابراهيم المجدوب` sans hamza et `المحامي الأستاذ أبراهيم المجدوب` avec) — verrouillé par `npm run check`. Reste : ajouter l'URL Google Maps dans `sameAs` et `hasMap` du JSON-LD — *(en attente de l'URL « Partager » de la fiche).* | Bonus |
+
+### 🔁 Renommer la fiche Google et corriger l'adresse (30/09/2026)
+
+Décision client du 30/09/2026 : le nom passe de `المحامي ابراهيم المجدوب` à
+`المحامي الاستاذ ابراهيم المجدوب`, **et** l'adresse mentionne l'immeuble
+`عمارة محجوب` (Mahjoub) — et non `عمارة المجدوب`. Les deux doivent être
+identiques à la page `/ar/`, sinon Google relie deux entités distinctes.
+
+Nom à saisir, une seule fois, exactement :
+
+```
+avocat ibrahim majdoub - المحامي الاستاذ ابراهيم المجدوب
+```
+
+- partie latine **inchangée** ; séparateur : tiret entouré d'espaces ;
+- arabe **sans hamza** (`الاستاذ`, `ابراهيم`) — c'est la frappe réelle des recherches
+  tunisiennes et la graphie du site ;
+- ne rien ajouter d'autre (ni « Sousse », ni « droit pénal ») : les descripteurs
+  ajoutés au nom sont un motif de suspension.
+
+Adresse à saisir dans le champ **Adresse** de la fiche (même graphie que le site) :
+
+```
+نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع، سوسة 4000
+```
+
+Procédure :
+
+1. `business.google.com` → profil du cabinet → **Modifier le profil**.
+2. **Nom de l'activité** : coller la chaîne ci-dessus. **Adresse** : corriger
+   l'immeuble (`عمارة محجوب`). Enregistrer les deux **dans la même session** — un
+   seul cycle de re-vérification au lieu de deux.
+3. Google peut demander une **re-vérification** (vidéo ou code postal) : c'est le
+   comportement normal après un changement de nom ou d'adresse. Préparer la plaque
+   du cabinet, une facture ou l'attestation d'inscription au tableau de Sousse.
+4. Contrôler sous 24–72 h la propagation sur Maps (vérifier que l'épingle n'a pas
+   glissé), puis aligner les annuaires NAP (point 4) sur le nom **et** l'adresse.
+5. Aucune action côté code : le site porte déjà le nouveau nom et la bonne adresse
+   (les `alternateName` gardent les graphies accentuées pour l'appariement).
+
+⚠️ **Risque à connaître** : modifier le nom ou l'adresse d'une fiche vérifiée peut
+la faire repasser en « En attente de vérification » — elle disparaît alors
+temporairement du pack local. Faire l'opération en une fois, ne pas la répéter, et
+**ne pas toucher à la catégorie** la même semaine.
+
+Côté site, le même jour (30/09/2026) : page `/ar/` passée à la graphie sans hamza
+(`<title>` 68 car., `<h1>`, meta, OG/Twitter, alts, JSON-LD `Person.name` +
+`honorificPrefix`), nom du cabinet aligné (`مكتب ابراهيم المجدوب للمحاماة`), adresse
+corrigée dans les **3 langues** (FR `Immeuble Mahjoub`, EN `Mahjoub Building`,
+AR `عمارة محجوب`) — JSON-LD `streetAddress` **et** texte visible — et toutes les
+écritures accentuées conservées en `alternateName` sur les 3 pages
+(`المحامي الأستاذ أبراهيم المجدوب`, `الأستاذ أبراهيم المجدوب`, `مكتب أبراهيم
+المجدوب للمحاماة`). `npm run check` refuse désormais toute réapparition d'une
+graphie accentuée du nom **ou** de `عمارة المجدوب` dans le texte visible : l'entité
+et le NAP ne peuvent plus dériver.
 
 ## 🟡 Priorité 1 — Contenu & structure
 
