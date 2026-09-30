@@ -97,6 +97,14 @@ Le site seul ne suffit pas : Google relie les sources entre elles.
    canonique AR du site.
 2. **Mêmes NAP** (nom, adresse, téléphone) partout : Facebook, annuaires
    d'avocats, mentions légales. Une variante suffit pour tout diluer.
+   Adresse de référence (immeuble **محجوب** / Mahjoub, pas المجدوب — vérifié par
+   `npm run check`) :
+
+   | Langue | Adresse |
+   | --- | --- |
+   | FR | `Rue Victor Hugo — Immeuble Mahjoub, 4ᵉ étage — Sousse, Tunisie` |
+   | EN | `Rue Victor Hugo — Mahjoub Building, 4th floor — Sousse, Tunisia` |
+   | AR | `نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع — سوسة، الجمهورية التونسية` |
 3. La page **Facebook** est déjà déclarée en `sameAs` : le nom de la page doit
    correspondre, sinon le lien n'apporte rien.
 4. Bump du cache-busting (`?v=`) si `assets/img/og.jpg` change de contenu.

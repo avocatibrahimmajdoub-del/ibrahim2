@@ -51,6 +51,12 @@ const DEAD_HOSTS = ["cabinet-majdoub.tn"];
 const FB = "https://www.facebook.com/brahim.majdoub.7/";
 const PHONE = "21696655238";
 
+// Adresse : le cabinet est au 4e etage de « عمارة محجوب » (immeuble Mahjoub) et
+// non « عمارة المجدوب ». Google apparie le NAP du site avec la fiche du cabinet :
+// les 3 langues doivent porter la meme graphie, sinon le pack local se dilue.
+const NAP_BUILDING = { "index.html": "Immeuble Mahjoub", "en/index.html": "Mahjoub Building", "ar/index.html": "عمارة محجوب" };
+const NAP_BUILDING_STALE = ["عمارة المجدوب", "Immeuble El Majdoub", "El Majdoub Building"];
+
 const PAGES = [
   { file: "index.html", lang: "fr", dir: "ltr", path: "/", brand: "Maître Brahim Majdoub" },
   { file: "en/index.html", lang: "en", dir: "ltr", path: "/en/", brand: "Brahim Majdoub" },
@@ -187,6 +193,12 @@ for (const page of PAGES) {
   if (dataEmail !== EMAIL) fail(`${page.file}: data-email = ${dataEmail} (composeur e-mail casse)`);
   if ((html.match(new RegExp(EMAIL.replace(/\./g, "\\."), "g")) || []).length < 4)
     fail(`${page.file}: ${EMAIL} present <4x (JSON-LD + composeur + coordonnees + pied de page)`);
+
+  // ---------- adresse : la meme graphie de l'immeuble dans les 3 langues ----------
+  if (!html.includes(NAP_BUILDING[page.file]))
+    fail(`${page.file}: adresse sans « ${NAP_BUILDING[page.file]} » (immeuble Mahjoub)`);
+  for (const stale of NAP_BUILDING_STALE)
+    if (html.includes(stale)) fail(`${page.file}: adresse — graphie perimee « ${stale} » (immeuble Mahjoub)`);
 
 
   // ---------- RTL : toute chaine LTR (e-mail, +tel) doit etre isolee ----------
