@@ -7,6 +7,7 @@
   égale au dateModified du noeud WebPage (contrôlé par npm run check).
   L'extension image:image déclare les visuels du cabinet : leurs <image:title>
   reprennent les alt des pages, pour la recherche d'images (marque + visage).
+  Généré par scripts/build-pages.mjs — ne pas éditer à la main.
 -->
 <urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -15,7 +16,7 @@
 >
   <url>
     <loc>https://ibrahimmajdoub.netlify.app/</loc>
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
@@ -31,7 +32,7 @@
   </url>
   <url>
     <loc>https://ibrahimmajdoub.netlify.app/en/</loc>
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
@@ -47,7 +48,7 @@
   </url>
   <url>
     <loc>https://ibrahimmajdoub.netlify.app/ar/</loc>
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/" />
@@ -60,5 +61,221 @@
         <image:loc>https://ibrahimmajdoub.netlify.app/assets/img/portrait.jpg</image:loc>
         <image:title>صورة للمحامي الاستاذ ابراهيم المجدوب، محامٍ بسوسة، أمام مكتبة قانونية</image:title>
       </image:image>
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/business-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/business-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/business-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/business-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/business-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/business-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-des-affaires/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/business-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/business-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-penal/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/criminal-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/criminal-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/criminal-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/criminal-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/criminal-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/criminal-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-penal/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/criminal-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/criminal-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/family-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/family-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/family-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/family-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/family-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/family-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-de-la-famille/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/family-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/family-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-immobilier/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/real-estate-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/real-estate-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/real-estate-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/real-estate-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/real-estate-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/real-estate-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-immobilier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/real-estate-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/real-estate-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-du-travail/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/employment-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/employment-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/employment-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/employment-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/employment-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/employment-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-du-travail/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/employment-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/employment-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/debt-collection/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/debt-collection/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/debt-collection/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/debt-collection/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/debt-collection/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/debt-collection/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/recouvrement-de-creances/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/debt-collection/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/debt-collection/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/services/droit-douanier/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/customs-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/customs-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/en/services/customs-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/customs-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/customs-law/" />
+
+  </url>
+  <url>
+    <loc>https://ibrahimmajdoub.netlify.app/ar/services/customs-law/</loc>
+    <lastmod>2026-11-04</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ibrahimmajdoub.netlify.app/services/droit-douanier/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ibrahimmajdoub.netlify.app/en/services/customs-law/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ibrahimmajdoub.netlify.app/ar/services/customs-law/" />
+
   </url>
 </urlset>

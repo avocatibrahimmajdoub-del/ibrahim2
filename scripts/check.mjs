@@ -18,6 +18,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  SERVICES, HUB, LANGS, BRAND as BRAND_BY_LANG, hubPath, servicePath,
+} from "./pages-data.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -418,6 +421,181 @@ for (const page of PAGES) {
 }
 
 ok(`SEO avance (robots max-image-preview, rel=me, serviceType = cartes affichees, dateModified = lastmod)`);
+
+/* ================================================================== */
+/*  PAGES SERVICES (site multipage) — mêmes exigences que l'accueil.    */
+/*  La liste est DÉRIVÉE de pages-data.mjs : impossible qu'une page     */
+/*  générée échappe au contrôle, ou qu'une page attendue soit absente.  */
+/* ================================================================== */
+
+const NAP_BY_LANG = { fr: NAP_BUILDING["index.html"], en: NAP_BUILDING["en/index.html"], ar: NAP_BUILDING["ar/index.html"] };
+const unesc = (s) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim();
+
+const SUBPAGES = [];
+for (const l of LANGS) {
+  SUBPAGES.push({ file: `${hubPath(l).slice(1)}index.html`, lang: l, path: hubPath(l), kind: "hub", content: HUB.content[l],
+    paths: Object.fromEntries(LANGS.map((x) => [x, hubPath(x)])) });
+  for (const s of SERVICES) {
+    SUBPAGES.push({ file: `${servicePath(s, l).slice(1)}index.html`, lang: l, path: servicePath(s, l), kind: "service", service: s, content: s.content[l],
+      paths: Object.fromEntries(LANGS.map((x) => [x, servicePath(s, x)])) });
+  }
+}
+
+const subLdNodes = [];
+for (const page of SUBPAGES) {
+  const html = await readFile(path.join(root, page.file), "utf8").catch(() => null);
+  if (html === null) { fail(`${page.file}: page attendue mais absente (relancez « npm run pages »)`); continue; }
+  const dir = page.lang === "ar" ? "rtl" : "ltr";
+
+  if (!html.includes(`<html lang="${page.lang}" dir="${dir}">`)) fail(`${page.file}: <html lang/dir> incorrect`);
+
+  /* canonical + hreflang réciproques vers la page équivalente dans chaque langue */
+  if (!html.includes(`rel="canonical" href="${SITE}${page.path}"`)) fail(`${page.file}: canonical incorrect`);
+  for (const l of LANGS)
+    if (!html.includes(`hreflang="${l}" href="${SITE}${page.paths[l]}"`)) fail(`${page.file}: hreflang ${l} incorrect`);
+  if (!html.includes(`hreflang="x-default" href="${SITE}${page.paths.fr}"`)) fail(`${page.file}: x-default incorrect`);
+
+  /* title / description / h1 / marque */
+  const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1].trim() ?? "";
+  const desc = html.match(/name="description"\s+content="([^"]*)"/)?.[1] ?? "";
+  const h1 = (html.match(/<h1>[\s\S]*?<\/h1>/)?.[0] ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const brand = BRAND_BY_LANG[page.lang];
+  const family = brand.split(" ").slice(-1)[0];
+  if (!title.startsWith(brand)) fail(`${page.file}: <title> ne commence pas par « ${brand} »`);
+  if (title.length < 30 || title.length > 68) fail(`${page.file}: <title> ${title.length} car. (30–68)`);
+  if (desc.length < 120 || desc.length > 175) fail(`${page.file}: meta description ${desc.length} car. (120–175)`);
+  if (!desc.includes(family)) fail(`${page.file}: meta description sans le nom`);
+  if (!h1.includes(brand)) fail(`${page.file}: le nom n'apparaît pas dans le <h1>`);
+  if (!/Sousse|سوسة/.test(h1)) fail(`${page.file}: <h1> sans la ville (ciblage local)`);
+
+  const visible = html.replace(/<script[\s\S]*?<\/script>/g, " ");
+  for (const bad of FORBIDDEN_VISIBLE)
+    if (visible.includes(bad)) fail(`${page.file}: variante « ${bad} » dans le visible`);
+  if (visible.includes("أبراهيم")) fail(`${page.file}: hamza « أبراهيم » dans le visible`);
+  const brandHits = visible.split(brand).length - 1;
+  if (brandHits < 2) fail(`${page.file}: « ${brand} » ${brandHits}x dans le visible (2+ attendu)`);
+
+  /* OG / robots / rel=me */
+  if (!html.includes('property="og:locale:alternate"')) fail(`${page.file}: og:locale:alternate absent`);
+  for (const need of ["og:image:width", "og:image:height", "og:image:alt"])
+    if (!html.includes(need)) fail(`${page.file}: ${need} absent`);
+  const robots = html.match(/<meta name="robots" content="([^"]+)"/)?.[1];
+  if (!robots || !/index/.test(robots) || !robots.includes("max-image-preview:large")) fail(`${page.file}: meta robots incomplet`);
+  if (!html.includes(`<link rel="me" href="${FB}" />`)) fail(`${page.file}: rel="me" absent`);
+
+  /* ancres + assets locaux */
+  const anchors = [...html.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+  for (const a of new Set(anchors))
+    if (!html.includes(`id="${a}"`)) fail(`${page.file}: ancre #${a} sans cible`);
+  const locals = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1].split(/[?#]/)[0]);
+  for (const l of new Set(locals)) {
+    try { await readFile(path.join(root, l), null); } catch { fail(`${page.file}: fichier manquant ${l}`); }
+  }
+
+  /* contact : e-mail, composeur, NAP, domaine mort */
+  for (const dead of DEAD_HOSTS) if (html.includes(dead)) fail(`${page.file}: domaine mort ${dead}`);
+  const mailtos = [...html.matchAll(/href="mailto:([^"?]+)/g)].map((m) => m[1]);
+  for (const m of new Set(mailtos)) if (m !== EMAIL) fail(`${page.file}: mailto « ${m} » ≠ ${EMAIL}`);
+  if (!mailtos.length) fail(`${page.file}: aucun lien mailto`);
+  if (html.match(/data-email="([^"]*)"/)?.[1] !== EMAIL) fail(`${page.file}: data-email incorrect`);
+  if ((html.match(new RegExp(EMAIL.replace(/\./g, "\\."), "g")) || []).length < 4) fail(`${page.file}: ${EMAIL} présent <4x`);
+  if (!html.includes(NAP_BY_LANG[page.lang])) fail(`${page.file}: adresse sans « ${NAP_BY_LANG[page.lang]} »`);
+  for (const stale of NAP_BUILDING_STALE) if (html.includes(stale)) fail(`${page.file}: adresse périmée « ${stale} »`);
+
+  /* RTL : isolation bidi */
+  if (dir === "rtl") {
+    const textSeulement = html.replace(/<bdi[^>]*>[\s\S]*?<\/bdi>/g, " ").replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<style[\s\S]*?<\/style>/g, " ").replace(/<[^>]+>/g, " ");
+    if (textSeulement.includes(EMAIL)) fail(`${page.file}: e-mail visible hors <bdi>`);
+    if (/\+216\s*\d/.test(textSeulement)) fail(`${page.file}: téléphone visible hors <bdi>`);
+    if ((html.match(/<bdi dir="ltr">/g) || []).length < 3) fail(`${page.file}: <3 isolations <bdi>`);
+  }
+
+  /* labels appariés */
+  const fors = [...html.matchAll(/<label[^>]*for="([^"]+)"/g)].map((m) => m[1]);
+  for (const f of fors) if (!html.includes(`id="${f}"`)) fail(`${page.file}: label for="${f}" sans contrôle`);
+
+  /* JSON-LD : ≥2 blocs parseables, collectés */
+  const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  if (ldBlocks.length < 2) fail(`${page.file}: au moins 2 blocs JSON-LD attendus`);
+  const nodes = [];
+  for (const [i, raw] of ldBlocks.entries()) {
+    try { const d = JSON.parse(raw); (d["@graph"] ? d["@graph"] : [d]).forEach((n) => { nodes.push(n); subLdNodes.push([page.file, n]); }); }
+    catch (e) { fail(`${page.file}: bloc JSON-LD #${i + 1} invalide — ${e.message}`); }
+  }
+
+  /* WebPage : url, langue, dateModified = lastmod sitemap */
+  const wp = nodes.find((n) => n["@type"] === "WebPage");
+  if (!wp) fail(`${page.file}: nœud WebPage absent`);
+  else {
+    if (wp.url !== `${SITE}${page.path}`) fail(`${page.file}: WebPage.url incorrect`);
+    if (wp.inLanguage !== page.lang) fail(`${page.file}: WebPage.inLanguage incorrect`);
+    if (!lastmod.includes(wp.dateModified)) fail(`${page.file}: WebPage.dateModified ${wp.dateModified} absent du sitemap`);
+    for (const k of ["isPartOf", "about", "mainEntity", "primaryImageOfPage"])
+      if (!wp[k]) fail(`${page.file}: WebPage.${k} manquant`);
+    const ids = new Set(nodes.map((n) => n["@id"]));
+    for (const ref of [wp.isPartOf?.["@id"], wp.mainEntity?.["@id"], ...(Array.isArray(wp.about) ? wp.about : [wp.about]).map((a) => a?.["@id"])])
+      if (ref && !ids.has(ref)) fail(`${page.file}: WebPage pointe vers un @id inexistant (${ref})`);
+  }
+
+  /* Service (page domaine) ou ItemList (hub) + BreadcrumbList */
+  if (page.kind === "service") {
+    const svc = nodes.find((n) => n["@type"] === "Service");
+    if (!svc) fail(`${page.file}: nœud Service absent`);
+    else {
+      if (svc.url !== `${SITE}${page.path}`) fail(`${page.file}: Service.url incorrect`);
+      if (svc.provider?.["@id"] !== `${SITE}/#cabinet`) fail(`${page.file}: Service.provider ne pointe pas sur le cabinet`);
+      if (!svc.areaServed?.length) fail(`${page.file}: Service.areaServed absent`);
+    }
+  } else {
+    const list = nodes.find((n) => n["@type"] === "ItemList");
+    if (!list) fail(`${page.file}: nœud ItemList absent (hub)`);
+    else if (list.itemListElement?.length !== SERVICES.length) fail(`${page.file}: ItemList ${list.itemListElement?.length} ≠ ${SERVICES.length} services`);
+  }
+  const bc = nodes.find((n) => n["@type"] === "BreadcrumbList");
+  if (!bc) fail(`${page.file}: BreadcrumbList absent`);
+  else {
+    const want = page.kind === "service" ? 3 : 2;
+    if (bc.itemListElement?.length !== want) fail(`${page.file}: BreadcrumbList ${bc.itemListElement?.length} étapes (attendu ${want})`);
+    for (const it of bc.itemListElement ?? [])
+      if (!String(it.item).startsWith(SITE)) fail(`${page.file}: BreadcrumbList.item hors domaine`);
+  }
+
+  /* FAQPage : les questions balisées DOIVENT être celles affichées */
+  const faqSec = html.match(/<div class="faq-list">([\s\S]*?)<\/div>/)?.[1] ?? "";
+  const summaries = [...faqSec.matchAll(/<summary>([\s\S]*?)<\/summary>/g)].map((m) => unesc(m[1]));
+  const faqLd = nodes.find((n) => n["@type"] === "FAQPage");
+  if (!faqLd) fail(`${page.file}: FAQPage absent`);
+  else {
+    const questions = (faqLd.mainEntity ?? []).map((q) => q.name.replace(/\s+/g, " ").trim());
+    if (summaries.length !== questions.length) fail(`${page.file}: FAQPage ${questions.length} questions ≠ ${summaries.length} affichées`);
+    else for (let i = 0; i < questions.length; i++)
+      if (questions[i] !== summaries[i]) fail(`${page.file}: FAQ question ${i + 1} balisée ≠ affichée`);
+  }
+
+  ok(`${page.file} (${page.kind}, lang=${page.lang}, ${title.length} car. title)`);
+}
+
+/* ---------- maillage interne : tout lien /… doit résoudre ---------- */
+const allHtmlFiles = [...PAGES.map((p) => p.file), ...SUBPAGES.map((p) => p.file)];
+let internalLinks = 0;
+for (const file of allHtmlFiles) {
+  const html = await readFile(path.join(root, file), "utf8");
+  const hrefs = [...html.matchAll(/href="(\/[^"]*)"/g)].map((m) => m[1].split(/[?#]/)[0])
+    .filter((h) => !h.startsWith("//") && !h.startsWith("/assets/"));
+  for (const h of new Set(hrefs)) {
+    internalLinks++;
+    const target = h.endsWith("/") ? `${h}index.html` : h;
+    try { await readFile(path.join(root, target.slice(1)), null); }
+    catch { fail(`${file}: lien interne cassé ${h}`); }
+  }
+}
+ok(`maillage interne (${internalLinks} liens internes résolus, ${SUBPAGES.length} pages services)`);
+
+/* ---------- sitemap : toutes les pages services y figurent ---------- */
+const sitemapLocs = [...sitemapRaw.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim());
+for (const page of SUBPAGES)
+  if (!sitemapLocs.includes(`${SITE}${page.path}`)) fail(`sitemap.xml: page service absente ${page.path}`);
+ok(`sitemap.xml couvre les ${SUBPAGES.length} pages services`);
 
 if (failures) {
   console.error(`\n${failures} échec(s)`);

@@ -7,6 +7,8 @@
   "scripts": {
     "serve": "python3 -m http.server 5173 --bind 0.0.0.0",
     "check": "node scripts/check.mjs",
+    "pages": "node scripts/build-pages.mjs",
+    "pages:check": "node scripts/build-pages.mjs --check",
     "images": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {

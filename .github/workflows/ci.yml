@@ -21,3 +21,6 @@ jobs:
 
       - name: Static checks (pages, hreflang, ancres, assets, labels)
         run: npm run check
+
+      - name: Pages services à jour (aucune dérive data → HTML)
+        run: npm run pages:check

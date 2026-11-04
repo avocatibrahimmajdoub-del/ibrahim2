@@ -1,17 +1,17 @@
 # Audit SEO — Cabinet Maître Brahim Majdoub
-*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google) — périmètre : `/`, `/en/`, `/ar/`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
+*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google), puis le 4 novembre 2026 (**site multipage : 24 pages services**) — périmètre : `/`, `/en/`, `/ar/`, `*/services/*`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
 
 ## Verdict global
 
 **SEO technique : 9/10 — excellent, parmi les meilleurs réglages possibles pour un site statique.**
-Le vrai potentiel de croissance n'est **pas** dans le code : il est dans le **SEO local hors site** (fiche Google, avis, annuaires) et dans **l'élargissement du contenu** (aujourd'hui une seule page par langue).
+Depuis le 04/11/2026, le site est **multipage** : 24 pages services (1 hub + 7 domaines × 3 langues) viennent lever le plafond « une page par langue ». Le vrai potentiel de croissance restant est dans le **SEO local hors site** (fiche Google, avis, annuaires) et dans des **articles de fond** longue traîne.
 
 | Pilier | Note | Commentaire |
 |---|---|---|
-| Indexabilité & technique | 🟢 9/10 | Crawlable sans JS, canonical/hreflang/herflang parfaits, CI verrouillée |
-| Données structurées | 🟢 10/10 | LegalService + Attorney + FAQPage + OfferCatalog valides |
-| Performance (théorique) | 🟢 8/10 | Léger, images optimisées ; LCP améliorable d'un cran |
-| Contenu & mots-clés | 🟡 6/10 | Bon ciblage « avocat Sousse », mais 1 page = plafond bas |
+| Indexabilité & technique | 🟢 9/10 | Crawlable sans JS, canonical/hreflang parfaits, CI verrouillée |
+| Données structurées | 🟢 10/10 | LegalService + Attorney + FAQPage + OfferCatalog + Service + BreadcrumbList valides |
+| Performance (théorique) | 🟢 8/10 | Léger, images optimisées ; preload LCP ajouté le 04/11 |
+| Contenu & mots-clés | 🟢 8/10 | 24 pages services ciblées (domaine + ville) × 3 langues ; restent les articles |
 | SEO local (off-site) | 🔴 3/10 | Ni fiche Google Business, ni avis réels, ni annuaires |
 | e-E-A-T / YMYL | 🟡 7/10 | Meta/YMYL : signaux présents mais témoignages encore « gabarits » |
 
@@ -103,10 +103,9 @@ et le NAP ne peuvent plus dériver.
 
 ## 🟡 Priorité 1 — Contenu & structure
 
-6. **Une page = un plafond de mots-clés.** 43 des 66 liens de chaque page sont des ancres internes (`#services`, `#contact`…) : Google n'indexe qu'une seule URL par langue. Pour capter les requêtes longue traîne :
-   - créer **une page par domaine** (`/services/droit-penal-sousse/`, `/services/droit-douanier/`…) × 3 langues, chacune avec title/description/FQA spécifiques ciblant « avocat droit pénal Sousse », « محامي قضايا جزائية سوسة »…
-   - cibler des requêtes à intention réelle : « avocat divorce Tunisie », « honoraires avocat Sousse », « procédure saisie-arrêt Tunisie », « avocat stupéfiants Tunisie ».
-   - ajouter 3–5 **articles de fond** (questions des clients) relayés en `Article` schema.
+6. ✅ **FAIT (04/11/2026) — le site est multipage.** 24 pages services ont été créées : 1 hub + 7 domaines × 3 langues (`/services/droit-penal/`, `/en/services/criminal-law/`, `/ar/services/criminal-law/`…). Chacune porte un title/description uniques (30–68 / 120–175 car.), un `<h1>` domaine + ville, 6 missions, un déroulement en 4 étapes, un encadré « Bon à savoir », une FAQ de 4 questions alignée sur son JSON-LD `FAQPage`, un fil d'Ariane `BreadcrumbList`, un nœud `Service` (ou `ItemList` pour le hub) et le graphe d'entités commun. Les cartes et le pied de page des 3 accueils pointent désormais vers ces pages (297 liens internes résolus, vérifiés par `npm run check`). Le sitemap couvre les 27 URLs avec hreflang réciproques. Contenu généré depuis `scripts/pages-data.mjs` via `npm run pages`, anti-dérive `npm run pages:check` en CI. **Reste :**
+   - ✅ requêtes à intention réelle couvertes par les pages : « avocat divorce Tunisie » (famille), « procédure saisie-arrêt Tunisie » (recouvrement), « avocat stupéfiants Tunisie » (pénal) ; une FAQ « honoraires » par page.
+   - ajouter 3–5 **articles de fond** (questions des clients) relayés en `Article` schema — prochaine marche longue traîne.
 7. **Vérifier la propriété Search Console** : la balise meta est commentée ; seul le fichier `google58bface3e40de19d.html` au dépôt fait office de vérification. Confirmer que la propriété GSC est active et y **soumettre le sitemap**, idem Bing Webmaster Tools.
 8. **Lier les ressources officielles** : un lien sortant vers le site de l'Ordre National des Avocats / le numéro de table si publiable renforce le e-E-A-T (secteur droit = YMYL). Actuellement un seul lien de fond sortant (ILF).
 
@@ -127,8 +126,8 @@ et le NAP ne peuvent plus dériver.
 | Semaine | Actions |
 |---|---|
 | 1 | Fiche Google Business + demande d'avis aux premiers clients + vérification GSC (P0) |
-| 2–4 | Inscriptions annuaires NAP cohérentes ; rédaction des 7 pages services (FR d'abord) |
-| T2 | Traduction EN/AR des pages services ; achat domaine + migration 301 |
+| 2–4 | Inscriptions annuaires NAP cohérentes ; ~~rédaction des 7 pages services~~ ✅ FAIT (04/11, FR + EN + AR d'emblée) |
+| T2 | ~~Traduction EN/AR des pages services~~ ✅ FAIT ; achat domaine + migration 301 ; soumettre le sitemap 27 URLs à GSC/Bing |
 | T3 | 3 articles longue traîne ; avis réels en lieu et place des gabarits ; mesures P2 |
 
 ## Mot de la fin
