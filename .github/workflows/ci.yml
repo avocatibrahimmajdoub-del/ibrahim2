@@ -24,3 +24,6 @@ jobs:
 
       - name: Pages services à jour (aucune dérive data → HTML)
         run: npm run pages:check
+
+      - name: Score SEO technique (verrouillé à 100/100)
+        run: npm run seo:score -- --strict

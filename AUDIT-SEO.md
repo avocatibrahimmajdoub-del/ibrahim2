@@ -1,14 +1,16 @@
 # Audit SEO — Cabinet Maître Brahim Majdoub
-*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google), puis le 4 novembre 2026 (**site multipage : 24 pages services**) — périmètre : `/`, `/en/`, `/ar/`, `*/services/*`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
+*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google), puis le 4 novembre 2026 (**site multipage : 24 pages services**, puis **score SEO technique verrouillé à 100/100** : vraie page 404, image OG versionnée sans query string, en-têtes de sécurité, scoreur `npm run seo:score` en CI) — périmètre : `/`, `/en/`, `/ar/`, `*/services/*`, `404.html`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + `npm run seo:score` + audit manuel.*
 
 ## Verdict global
 
-**SEO technique : 9/10 — excellent, parmi les meilleurs réglages possibles pour un site statique.**
-Depuis le 04/11/2026, le site est **multipage** : 24 pages services (1 hub + 7 domaines × 3 langues) viennent lever le plafond « une page par langue ». Le vrai potentiel de croissance restant est dans le **SEO local hors site** (fiche Google, avis, annuaires) et dans des **articles de fond** longue traîne.
+**SEO technique on-site : 100/100 sur les 38 critères mesurables** (`npm run seo:score --strict`, verrouillé en CI) — parmi les meilleurs réglages possibles pour un site statique.
+Depuis le 04/11/2026, le site est **multipage** : 24 pages services (1 hub + 7 domaines × 3 langues) viennent lever le plafond « une page par langue ». Les deux derniers défauts réels ont été corrigés le 04/11 : **vraie page 404** (fini le soft-404 qui renvoyait l'accueil) et **image OG en nom versionné** `og-v4.jpg` (plus de query string `?v=4` sur les 27 pages).
+
+> ⚠️ **Honnêteté du score** : 100/100 mesure tout ce que le *code* contrôle (crawl, métadonnées, structure, schema, technique). Cela **ne garantit pas** la 1ʳᵉ place Google : le **hors-site** (fiche Google Business, avis réels, backlinks, domaine dédié) et les **placeholders** (coordonnées, témoignages) restent des leviers humains, hors du dépôt. Voir P0 ci-dessous.
 
 | Pilier | Note | Commentaire |
 |---|---|---|
-| Indexabilité & technique | 🟢 9/10 | Crawlable sans JS, canonical/hreflang parfaits, CI verrouillée |
+| Indexabilité & technique | 🟢 10/10 | Crawlable sans JS, canonical/hreflang parfaits, 404 dédiée, CI + score 100/100 verrouillés |
 | Données structurées | 🟢 10/10 | LegalService + Attorney + FAQPage + OfferCatalog + Service + BreadcrumbList valides |
 | Performance (théorique) | 🟢 8/10 | Léger, images optimisées ; preload LCP ajouté le 04/11 |
 | Contenu & mots-clés | 🟢 8/10 | 24 pages services ciblées (domaine + ville) × 3 langues ; restent les articles |
@@ -111,15 +113,42 @@ et le NAP ne peuvent plus dériver.
 
 ## 🟢 Priorité 2 — Optimisations fines (code)
 
-9. **Precharger le visuel LCP** : ajouter dans `<head>` des 3 pages —
-   `<link rel="preload" as="image" href="/assets/img/office.webp" type="image/webp" />`
-   (complète `fetchpriority="high"` déjà présent ; quelques dizaines de ms de LCP gagnées).
+9. ✅ **FAIT (04/11/2026)** — preload du visuel LCP dans le `<head>` des 3 accueils
+   (`<link rel="preload" as="image" href="/assets/img/office.webp?v=6" type="image/webp" />`,
+   complète `fetchpriority="high"`). Les pages services ont un LCP textuel, pas d'image à précharger.
 10. **Fonts Google allégées** : Inter (4 graisses) + Playfair (6, italiques incluses) = CSS render-blocking. Réduire aux 5–6 graisses réellement utilisées, ou auto-héberger ± `font-display: swap` déjà OK.
-11. **`og:image?v=4` → nom versionné** (`og-v4.jpg`) : certains scrapers de messagerie gèrent mal les query strings ; cause classique de carte de partage obsolète après mise à jour.
+11. ✅ **FAIT (04/11/2026)** — `og:image?v=4` → **nom versionné `og-v4.jpg`** sur les
+    27 pages (og:image + twitter:image + image JSON-LD). Plus aucune query string sur
+    l'URL OG : les scrapers de messagerie la mettent en cache telle quelle. En cas de
+    changement de contenu, renommer en `og-v5.jpg` (voir README).
 12. **Nettoyage** : `assets/img/hero.jpg` + `hero.webp` (~125 ko) non référencés — les retirer du déploiement ou les réemployer.
 13. **Détails schema (optionnels)** : `priceRange` sur `LegalService`, `twitter:site` si un compte X existe.
 
 ---
+
+## 🔒 Verrouillage 100/100 (04/11/2026)
+
+Objectif « SEO 100/100 » : corriger les derniers défauts réels, puis **verrouiller**
+le résultat pour qu'il ne puisse pas régresser. Trois livrables :
+
+1. **Vraie page 404** (`404.html`) : trilingue, `noindex,follow`, liens de retour
+   accueil / services / contact. `netlify.toml` la sert avec le statut **404**
+   (`/* → /404.html status=404`) — avant, le catch-all renvoyait l'accueil, ce que
+   Google traite comme un *soft-404* (gaspillage de crawl, signal de qualité dégradé).
+2. **Image OG versionnée** : `og.jpg?v=4` → `og-v4.jpg` (point 11 ci-dessus), plus
+   **en-têtes de sécurité** dans `netlify.toml` : `X-Content-Type-Options: nosniff`,
+   `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`
+   (caméra/micro/géo coupées). Pas de `X-Frame-Options` ni de CSP `frame-ancestors`
+   pour ne pas bloquer l'intégration (preview, carte).
+3. **Scoreur automatique** (`scripts/seo-score.mjs`, `npm run seo:score`) : **38
+   critères réels** vérifiés sur les 27 pages, note /100 en 5 catégories
+   (indexabilité, métadonnées, contenu/structure, données structurées,
+   performance/technique). `--strict` sort en code 1 si < 100 → **ajouté à la CI**
+   (`.github/workflows/ci.yml`). Résultat actuel : **100/100 (38/38)**.
+
+Le score est *reproductible* : `npm run seo:score` le recalcule à chaque exécution,
+la CI refuse toute régression. C'est la garantie « 100/100 » la plus honnête qu'un
+dépôt puisse donner — elle porte sur le on-site, pas sur le classement Google.
 
 ## Plan d'action recommandé
 
@@ -132,4 +161,4 @@ et le NAP ne peuvent plus dériver.
 
 ## Mot de la fin
 
-Le socle technique atteint déjà le niveau où **chaque heure passée dans le code rapporte moins qu'une heure passée sur la fiche Google, les avis et le contenu**. Garder `npm run check` en CI pour ne rien casser pendant que le contenu grandit.
+Le socle technique est à **100/100 sur les 38 critères mesurables** et verrouillé en CI (`npm run check` + `npm run pages:check` + `npm run seo:score --strict`). On atteint le niveau où **chaque heure passée dans le code rapporte moins qu'une heure passée sur la fiche Google, les avis et le contenu**. Garder ces trois verrous en CI pendant que le contenu grandit ; le prochain gain de trafic viendra du hors-site (P0) et des articles longue traîne, pas d'un réglage technique supplémentaire.

@@ -55,6 +55,7 @@ commitées telles quelles, Netlify sert la racine) :
 npm run pages          # 2. régénère les 24 pages + sitemap.xml
 npm run check          # 3. vérifie SEO, hreflang, JSON-LD, maillage, NAP…
 npm run pages:check    # 4. (CI) échoue si une page commitée diffère de la génération
+npm run seo:score      # 5. note SEO technique /100 (38 critères) — voir plus bas
 ```
 
 Le générateur **extrait le chrome des pages d'accueil** (header, footer, contact,
@@ -151,7 +152,10 @@ Le site seul ne suffit pas : Google relie les sources entre elles.
    | AR | `نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع — سوسة، الجمهورية التونسية` |
 3. La page **Facebook** est déjà déclarée en `sameAs` : le nom de la page doit
    correspondre, sinon le lien n'apporte rien.
-4. Bump du cache-busting (`?v=`) si `assets/img/og.jpg` change de contenu.
+4. Si `assets/img/og-v4.jpg` change de contenu, **renommer le fichier** en
+   `og-v5.jpg` (nom versionné, jamais de query string `?v=` sur l'URL OG : les
+   crawlers sociaux la mettent en cache telle quelle) et régénérer avec
+   `npm run pages` + mettre à jour les 3 accueils.
 
 Balises en place : `<title>` ≤ 68 caractères, `meta description` 120–175,
 `og:image` avec `width`/`height`/`alt`, `og:locale` + `og:locale:alternate` par
@@ -160,7 +164,7 @@ langue, JSON-LD parsé et validé par la CI.
 ### Les visuels portent aussi le nom
 
 `assets/img/office.jpg` (hero) affiche une plaque nominative «إبراهيم المجدوب» et
-`assets/img/og.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
+`assets/img/og-v4.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
 Cour ». Ces graphies **ne doivent pas être supprimées des images** mais être
 déclarées dans `alternateName`, sinon Google traite l'image comme une entité
 étrangère. Les `alt` décrivent ce que l'image montre réellement (plaque, robe,
@@ -239,3 +243,31 @@ title/description calibrés, JSON-LD (WebPage, Service/ItemList, BreadcrumbList,
 FAQPage alignée sur le visible), maillage interne, NAP et isolation bidi AR.
 Puis `npm run pages:check` échoue si une page services commitée diffère de ce que
 produirait `npm run pages` (anti-dérive data → HTML).
+Enfin `npm run seo:score -- --strict` échoue si la note SEO technique tombe
+sous 100/100.
+
+## Score SEO technique (`npm run seo:score`)
+
+`scripts/seo-score.mjs` vérifie **38 critères réels** sur les 27 pages et produit
+une note /100, groupée en 5 catégories :
+
+| Catégorie | Critères | Exemples |
+| --- | --- | --- |
+| A. Indexabilité & crawl | 6 | robots.txt, canonical, hreflang, sitemap, robots meta |
+| B. Métadonnées & partage | 10 | title/description calibrés + uniques, OG/Twitter complets, image OG versionnée |
+| C. Contenu & structure | 7 | h1 unique marque+ville, alt + dimensions images, NAP, graphie canonique |
+| D. Données structurées | 5 | JSON-LD valide, WebPage, Service/Breadcrumb, FAQ alignée, graphe d'entités |
+| E. Performance & technique | 10 | preload LCP, WebP, liens/assets non cassés, 404 noindex, bidi AR, headers sécurité |
+
+`npm run seo:score` affiche le détail ; `--strict` sort en code 1 si < 100 (CI).
+**Périmètre honnête** : cette note mesure le SEO *on-site* contrôlable par le
+code. Elle ne mesure pas le hors-site (avis Google, backlinks, fiche Business
+Profile), qui dépend d'actions humaines — voir `AUDIT-SEO.md`.
+
+## Page 404
+
+`404.html` est une vraie page d'erreur trilingue (`noindex,follow`), avec liens
+de retour accueil / services / contact. `netlify.toml` la sert avec le statut
+**404** (pas de « soft-404 » qui renverrait l'accueil). Des en-têtes de sécurité
+sûrs sont ajoutés (`X-Content-Type-Options`, `Referrer-Policy`,
+`Permissions-Policy`) — sans `X-Frame-Options` pour ne pas bloquer l'intégration.

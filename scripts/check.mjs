@@ -319,7 +319,7 @@ for (const [file, n] of ldNodes) {
     const alias = n.alternateName ?? [];
     if (!alias.includes("Ibrahim Mahjoub")) fail(`${file}: Person.alternateName sans la variante « Mahjoub »`);
     if (alias.length < 8) fail(`${file}: Person.alternateName trop court (${alias.length})`);
-    // la plaque du bureau (office.jpg) et la carte de partage (og.jpg) impriment
+    // la plaque du bureau (office.jpg) et la carte de partage (og-v4.jpg) impriment
     // leur propre orthographe : declarees ici, elles renforcent l'entite au lieu
     // de creer une fiche concurrente
     for (const a of ["إبراهيم المجدوب", "Ibrahim Majdoub"])

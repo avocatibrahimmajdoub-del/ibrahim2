@@ -404,14 +404,14 @@ ${alternates}
     <meta property="og:title" content="${esc(c.title)}" />
     <meta property="og:description" content="${esc(c.description)}" />
     <meta property="og:url" content="${abs(pagePath)}" />
-    <meta property="og:image" content="${abs("/assets/img/og.jpg")}?v=4" />
+    <meta property="og:image" content="${abs("/assets/img/og-v4.jpg")}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${esc(OG_ALT[lang])}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${esc(c.title)}" />
     <meta name="twitter:description" content="${esc(c.description)}" />
-    <meta name="twitter:image" content="${abs("/assets/img/og.jpg")}?v=4" />
+    <meta name="twitter:image" content="${abs("/assets/img/og-v4.jpg")}" />
     <meta property="og:locale" content="${meta.locale}" />
 ${ogLocaleAlts}
     <link rel="preconnect" href="https://fonts.googleapis.com" />

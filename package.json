@@ -9,6 +9,7 @@
     "check": "node scripts/check.mjs",
     "pages": "node scripts/build-pages.mjs",
     "pages:check": "node scripts/build-pages.mjs --check",
+    "seo:score": "node scripts/seo-score.mjs",
     "images": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {
