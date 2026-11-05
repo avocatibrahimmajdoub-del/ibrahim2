@@ -1,17 +1,19 @@
 # Audit SEO — Cabinet Maître Brahim Majdoub
-*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google) — périmètre : `/`, `/en/`, `/ar/`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + audit manuel.*
+*Date : 24 septembre 2026, mise à jour le 30 septembre 2026 (renommage AR + fiche Google), puis le 4 novembre 2026 (**site multipage : 24 pages services**, puis **score SEO technique verrouillé à 100/100** : vraie page 404, image OG versionnée sans query string, en-têtes de sécurité, scoreur `npm run seo:score` en CI) — périmètre : `/`, `/en/`, `/ar/`, `*/services/*`, `404.html`, robots.txt, sitemap.xml, netlify.toml, validation `npm run check` + `npm run seo:score` + audit manuel.*
 
 ## Verdict global
 
-**SEO technique : 9/10 — excellent, parmi les meilleurs réglages possibles pour un site statique.**
-Le vrai potentiel de croissance n'est **pas** dans le code : il est dans le **SEO local hors site** (fiche Google, avis, annuaires) et dans **l'élargissement du contenu** (aujourd'hui une seule page par langue).
+**SEO technique on-site : 100/100 sur les 38 critères mesurables** (`npm run seo:score --strict`, verrouillé en CI) — parmi les meilleurs réglages possibles pour un site statique.
+Depuis le 04/11/2026, le site est **multipage** : 24 pages services (1 hub + 7 domaines × 3 langues) viennent lever le plafond « une page par langue ». Les deux derniers défauts réels ont été corrigés le 04/11 : **vraie page 404** (fini le soft-404 qui renvoyait l'accueil) et **image OG en nom versionné** `og-v4.jpg` (plus de query string `?v=4` sur les 27 pages).
+
+> ⚠️ **Honnêteté du score** : 100/100 mesure tout ce que le *code* contrôle (crawl, métadonnées, structure, schema, technique). Cela **ne garantit pas** la 1ʳᵉ place Google : le **hors-site** (fiche Google Business, avis réels, backlinks, domaine dédié) et les **placeholders** (coordonnées, témoignages) restent des leviers humains, hors du dépôt. Voir P0 ci-dessous.
 
 | Pilier | Note | Commentaire |
 |---|---|---|
-| Indexabilité & technique | 🟢 9/10 | Crawlable sans JS, canonical/hreflang/herflang parfaits, CI verrouillée |
-| Données structurées | 🟢 10/10 | LegalService + Attorney + FAQPage + OfferCatalog valides |
-| Performance (théorique) | 🟢 8/10 | Léger, images optimisées ; LCP améliorable d'un cran |
-| Contenu & mots-clés | 🟡 6/10 | Bon ciblage « avocat Sousse », mais 1 page = plafond bas |
+| Indexabilité & technique | 🟢 10/10 | Crawlable sans JS, canonical/hreflang parfaits, 404 dédiée, CI + score 100/100 verrouillés |
+| Données structurées | 🟢 10/10 | LegalService + Attorney + FAQPage + OfferCatalog + Service + BreadcrumbList valides |
+| Performance (théorique) | 🟢 8/10 | Léger, images optimisées ; preload LCP ajouté le 04/11 |
+| Contenu & mots-clés | 🟢 8/10 | 24 pages services ciblées (domaine + ville) × 3 langues ; restent les articles |
 | SEO local (off-site) | 🔴 3/10 | Ni fiche Google Business, ni avis réels, ni annuaires |
 | e-E-A-T / YMYL | 🟡 7/10 | Meta/YMYL : signaux présents mais témoignages encore « gabarits » |
 
@@ -103,34 +105,60 @@ et le NAP ne peuvent plus dériver.
 
 ## 🟡 Priorité 1 — Contenu & structure
 
-6. **Une page = un plafond de mots-clés.** 43 des 66 liens de chaque page sont des ancres internes (`#services`, `#contact`…) : Google n'indexe qu'une seule URL par langue. Pour capter les requêtes longue traîne :
-   - créer **une page par domaine** (`/services/droit-penal-sousse/`, `/services/droit-douanier/`…) × 3 langues, chacune avec title/description/FQA spécifiques ciblant « avocat droit pénal Sousse », « محامي قضايا جزائية سوسة »…
-   - cibler des requêtes à intention réelle : « avocat divorce Tunisie », « honoraires avocat Sousse », « procédure saisie-arrêt Tunisie », « avocat stupéfiants Tunisie ».
-   - ajouter 3–5 **articles de fond** (questions des clients) relayés en `Article` schema.
+6. ✅ **FAIT (04/11/2026) — le site est multipage.** 24 pages services ont été créées : 1 hub + 7 domaines × 3 langues (`/services/droit-penal/`, `/en/services/criminal-law/`, `/ar/services/criminal-law/`…). Chacune porte un title/description uniques (30–68 / 120–175 car.), un `<h1>` domaine + ville, 6 missions, un déroulement en 4 étapes, un encadré « Bon à savoir », une FAQ de 4 questions alignée sur son JSON-LD `FAQPage`, un fil d'Ariane `BreadcrumbList`, un nœud `Service` (ou `ItemList` pour le hub) et le graphe d'entités commun. Les cartes et le pied de page des 3 accueils pointent désormais vers ces pages (297 liens internes résolus, vérifiés par `npm run check`). Le sitemap couvre les 27 URLs avec hreflang réciproques. Contenu généré depuis `scripts/pages-data.mjs` via `npm run pages`, anti-dérive `npm run pages:check` en CI. **Reste :**
+   - ✅ requêtes à intention réelle couvertes par les pages : « avocat divorce Tunisie » (famille), « procédure saisie-arrêt Tunisie » (recouvrement), « avocat stupéfiants Tunisie » (pénal) ; une FAQ « honoraires » par page.
+   - ajouter 3–5 **articles de fond** (questions des clients) relayés en `Article` schema — prochaine marche longue traîne.
 7. **Vérifier la propriété Search Console** : la balise meta est commentée ; seul le fichier `google58bface3e40de19d.html` au dépôt fait office de vérification. Confirmer que la propriété GSC est active et y **soumettre le sitemap**, idem Bing Webmaster Tools.
 8. **Lier les ressources officielles** : un lien sortant vers le site de l'Ordre National des Avocats / le numéro de table si publiable renforce le e-E-A-T (secteur droit = YMYL). Actuellement un seul lien de fond sortant (ILF).
 
 ## 🟢 Priorité 2 — Optimisations fines (code)
 
-9. **Precharger le visuel LCP** : ajouter dans `<head>` des 3 pages —
-   `<link rel="preload" as="image" href="/assets/img/office.webp" type="image/webp" />`
-   (complète `fetchpriority="high"` déjà présent ; quelques dizaines de ms de LCP gagnées).
+9. ✅ **FAIT (04/11/2026)** — preload du visuel LCP dans le `<head>` des 3 accueils
+   (`<link rel="preload" as="image" href="/assets/img/office.webp?v=6" type="image/webp" />`,
+   complète `fetchpriority="high"`). Les pages services ont un LCP textuel, pas d'image à précharger.
 10. **Fonts Google allégées** : Inter (4 graisses) + Playfair (6, italiques incluses) = CSS render-blocking. Réduire aux 5–6 graisses réellement utilisées, ou auto-héberger ± `font-display: swap` déjà OK.
-11. **`og:image?v=4` → nom versionné** (`og-v4.jpg`) : certains scrapers de messagerie gèrent mal les query strings ; cause classique de carte de partage obsolète après mise à jour.
+11. ✅ **FAIT (04/11/2026)** — `og:image?v=4` → **nom versionné `og-v4.jpg`** sur les
+    27 pages (og:image + twitter:image + image JSON-LD). Plus aucune query string sur
+    l'URL OG : les scrapers de messagerie la mettent en cache telle quelle. En cas de
+    changement de contenu, renommer en `og-v5.jpg` (voir README).
 12. **Nettoyage** : `assets/img/hero.jpg` + `hero.webp` (~125 ko) non référencés — les retirer du déploiement ou les réemployer.
 13. **Détails schema (optionnels)** : `priceRange` sur `LegalService`, `twitter:site` si un compte X existe.
 
 ---
+
+## 🔒 Verrouillage 100/100 (04/11/2026)
+
+Objectif « SEO 100/100 » : corriger les derniers défauts réels, puis **verrouiller**
+le résultat pour qu'il ne puisse pas régresser. Trois livrables :
+
+1. **Vraie page 404** (`404.html`) : trilingue, `noindex,follow`, liens de retour
+   accueil / services / contact. `netlify.toml` la sert avec le statut **404**
+   (`/* → /404.html status=404`) — avant, le catch-all renvoyait l'accueil, ce que
+   Google traite comme un *soft-404* (gaspillage de crawl, signal de qualité dégradé).
+2. **Image OG versionnée** : `og.jpg?v=4` → `og-v4.jpg` (point 11 ci-dessus), plus
+   **en-têtes de sécurité** dans `netlify.toml` : `X-Content-Type-Options: nosniff`,
+   `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`
+   (caméra/micro/géo coupées). Pas de `X-Frame-Options` ni de CSP `frame-ancestors`
+   pour ne pas bloquer l'intégration (preview, carte).
+3. **Scoreur automatique** (`scripts/seo-score.mjs`, `npm run seo:score`) : **38
+   critères réels** vérifiés sur les 27 pages, note /100 en 5 catégories
+   (indexabilité, métadonnées, contenu/structure, données structurées,
+   performance/technique). `--strict` sort en code 1 si < 100 → **ajouté à la CI**
+   (`.github/workflows/ci.yml`). Résultat actuel : **100/100 (38/38)**.
+
+Le score est *reproductible* : `npm run seo:score` le recalcule à chaque exécution,
+la CI refuse toute régression. C'est la garantie « 100/100 » la plus honnête qu'un
+dépôt puisse donner — elle porte sur le on-site, pas sur le classement Google.
 
 ## Plan d'action recommandé
 
 | Semaine | Actions |
 |---|---|
 | 1 | Fiche Google Business + demande d'avis aux premiers clients + vérification GSC (P0) |
-| 2–4 | Inscriptions annuaires NAP cohérentes ; rédaction des 7 pages services (FR d'abord) |
-| T2 | Traduction EN/AR des pages services ; achat domaine + migration 301 |
+| 2–4 | Inscriptions annuaires NAP cohérentes ; ~~rédaction des 7 pages services~~ ✅ FAIT (04/11, FR + EN + AR d'emblée) |
+| T2 | ~~Traduction EN/AR des pages services~~ ✅ FAIT ; achat domaine + migration 301 ; soumettre le sitemap 27 URLs à GSC/Bing |
 | T3 | 3 articles longue traîne ; avis réels en lieu et place des gabarits ; mesures P2 |
 
 ## Mot de la fin
 
-Le socle technique atteint déjà le niveau où **chaque heure passée dans le code rapporte moins qu'une heure passée sur la fiche Google, les avis et le contenu**. Garder `npm run check` en CI pour ne rien casser pendant que le contenu grandit.
+Le socle technique est à **100/100 sur les 38 critères mesurables** et verrouillé en CI (`npm run check` + `npm run pages:check` + `npm run seo:score --strict`). On atteint le niveau où **chaque heure passée dans le code rapporte moins qu'une heure passée sur la fiche Google, les avis et le contenu**. Garder ces trois verrous en CI pendant que le contenu grandit ; le prochain gain de trafic viendra du hors-site (P0) et des articles longue traîne, pas d'un réglage technique supplémentaire.

@@ -2255,3 +2255,198 @@ body.scrolled .site-head { box-shadow: 0 14px 34px -18px rgba(7, 17, 32, 0.45); 
   .js .t-track > [data-clone] { display: none; }
   .js .trust-bar .wrap { -webkit-mask-image: none; mask-image: none; }
 }
+
+/* ==========================================================================
+   Pages internes « services » (générées par scripts/build-pages.mjs).
+   Fil d'Ariane, hero compact, grille contenu + aside sticky, encadré conseil.
+   Propriétés logiques uniquement : un seul fichier sert LTR et RTL.
+   ========================================================================== */
+
+/* ---------- fil d'Ariane ---------- */
+.crumbs {
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+  padding-block: 12px;
+  font-size: 0.8rem;
+}
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.crumbs li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+.crumbs li + li::before {
+  content: "/";
+  color: var(--gold);
+}
+.crumbs a { color: var(--text); }
+.crumbs a:hover { color: var(--gold); text-decoration: underline; }
+.crumbs [aria-current="page"] { color: var(--ink); font-weight: 600; }
+
+/* ---------- hero compact ---------- */
+.page-hero {
+  background: var(--beige);
+  border-bottom: 1px solid var(--line);
+  padding-block: clamp(44px, 6vw, 76px) clamp(40px, 5vw, 60px);
+}
+.page-hero h1 {
+  margin-top: 18px;
+  font-size: clamp(2rem, 4.5vw, 3.1rem);
+  letter-spacing: -0.01em;
+}
+.page-hero h1 .b { display: block; }
+.page-hero h1 .it {
+  display: block;
+  margin-top: 10px;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.6em;
+  color: var(--gold);
+}
+.page-hero .lead {
+  margin-top: 20px;
+  font-size: 1.02rem;
+  max-width: 64ch;
+}
+.page-hero .hero-cta { margin-top: 28px; }
+.page-hero .trust-chips { margin-top: 26px; }
+
+/* ---------- grille contenu + aside ---------- */
+.svc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 48px;
+  align-items: start;
+  padding-block: clamp(48px, 6vw, 72px);
+}
+.svc-main { min-width: 0; }
+.svc-main .svc-block { padding-block: 0; margin-bottom: 60px; }
+.svc-main .svc-block:last-child { margin-bottom: 0; }
+.svc-main .section-head { margin-bottom: 30px; }
+.svc-main .h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+.svc-main .scope-grid { grid-template-columns: 1fr 1fr; }
+.svc-main .scope-grid .card p { min-height: 0; }
+.svc-main #related .cards { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.svc-main #related .card p { min-height: 0; }
+.svc-main .steps-grid { grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 36px; }
+.svc-main .steps-grid::before { display: none; }
+.svc-main .faq { background: transparent; }
+.svc-main .faq-list { margin-top: 30px; max-width: none; }
+.svc-main .watch + .faq { margin-top: 0; }
+
+/* ---------- encadré « Bon à savoir » ---------- */
+.watch {
+  background: var(--navy);
+  color: #fff;
+  border-radius: var(--r-md);
+  padding: 30px 32px;
+  margin-bottom: 60px;
+}
+.watch h2 { color: var(--gold-2); font-size: 1.3rem; }
+.watch p { margin-top: 12px; color: #c3ccd3; font-size: 0.95rem; max-width: 72ch; }
+
+/* ---------- aside sticky ---------- */
+.svc-aside {
+  position: sticky;
+  top: 90px;
+  display: grid;
+  gap: 20px;
+}
+.aside-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 26px;
+}
+.aside-card h2 { font-size: 1.2rem; }
+.aside-contact {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+  display: grid;
+  gap: 12px;
+}
+.aside-contact h2 { color: #fff; }
+.aside-contact p { color: #97a1aa; font-size: 0.88rem; }
+.aside-contact .btn { justify-content: center; }
+.aside-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--gold-2);
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+.aside-mail svg { width: 16px; height: 16px; flex: none; }
+.aside-mail:hover { text-decoration: underline; }
+
+.aside-lawyer {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.aside-lawyer picture { width: 72px; height: 72px; }
+.aside-lawyer img { width: 72px; height: 72px; object-fit: cover; border-radius: 50%; }
+.aside-lawyer h2 { font-size: 1.05rem; }
+.aside-lawyer p { margin-top: 8px; font-size: 0.82rem; color: var(--text); }
+.aside-lawyer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+.aside-lawyer a svg { width: 13px; height: 13px; }
+
+.aside-domains ul { margin-top: 14px; display: grid; gap: 2px; }
+.aside-domains li a {
+  display: block;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  font-size: 0.88rem;
+  color: #3d4750;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.aside-domains li a:hover { background: var(--beige); color: var(--ink); }
+.aside-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+.aside-all svg { width: 13px; height: 13px; }
+
+/* ---------- note de bas de contenu ---------- */
+.svc-note {
+  color: var(--text);
+  font-size: 0.8rem;
+  font-style: italic;
+  padding-block: 0 44px;
+}
+
+/* ---------- responsive pages internes ---------- */
+@media (max-width: 1020px) {
+  .svc-layout { grid-template-columns: 1fr; }
+  .svc-aside { position: static; grid-template-columns: 1fr 1fr; }
+  .aside-contact { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .svc-aside { grid-template-columns: 1fr; }
+  .svc-main .scope-grid { grid-template-columns: 1fr; }
+  .svc-main .steps-grid { grid-template-columns: 1fr; }
+  .page-hero h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); }
+  .watch { padding: 24px; }
+}

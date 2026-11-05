@@ -9,13 +9,58 @@ statique, donc crawlable sans JavaScript.
 index.html            page française (racine)
 en/index.html         page anglaise
 ar/index.html         page arabe (dir="rtl")
+services/             hub + 7 pages « domaines d'expertise » (FR)
+en/services/          hub + 7 pages (EN)
+ar/services/          hub + 7 pages (AR, dir="rtl")
 assets/css/style.css  feuille de style unique (propriétés logiques : 1 fichier = 2 directions)
 assets/js/main.js     ~90 lignes : menu mobile, compteurs, composeur WhatsApp/e-mail, année
 assets/img/           images servies (WebP + JPEG de repli, générées par npm run images)
 assets/original/      originaux intouchés (source du pipeline d'images)
 robots.txt sitemap.xml assets/favicon.svg
+scripts/pages-data.mjs     contenu trilingue des 24 pages services (source unique)
+scripts/build-pages.mjs    génère les pages services + sitemap.xml (npm run pages)
 scripts/check.mjs     vérifications statiques lancées par la CI
 ```
+
+## Pages services : le site est multipage
+
+Chaque domaine d'expertise a **sa propre URL dans chaque langue** (24 pages :
+1 hub + 7 domaines × 3 langues), pour capter les requêtes longue traîne
+(« avocat droit pénal Sousse », « محامي قضايا جزائية سوسة », « customs lawyer
+Sousse »…). Chaque page porte un `<title>` et une meta description uniques, un
+`<h1>` ciblant le domaine + la ville, une FAQ alignée sur son JSON-LD, un fil
+d'Ariane (`BreadcrumbList`), un nœud `Service` (ou `ItemList` pour le hub) et le
+graphe d'entités commun (`LegalService` ↔ `Person/Attorney` ↔ `WebSite`).
+
+```
+/services/                        /en/services/                 /ar/services/
+/services/droit-penal/            /en/services/criminal-law/    /ar/services/criminal-law/
+/services/droit-douanier/         /en/services/customs-law/     /ar/services/customs-law/
+/services/droit-des-affaires/     /en/services/business-law/    /ar/services/business-law/
+/services/droit-de-la-famille/    /en/services/family-law/      /ar/services/family-law/
+/services/droit-immobilier/       /en/services/real-estate-law/ /ar/services/real-estate-law/
+/services/droit-du-travail/       /en/services/employment-law/  /ar/services/employment-law/
+/services/recouvrement-de-creances/ /en/services/debt-collection/ /ar/services/debt-collection/
+```
+
+Slugs français pour `/services/`, anglais pour `/en/` et `/ar/` (slug latin pour
+l'arabe : URLs partageables sans percent-encoding). Le sélecteur de langue mène
+à la **page équivalente** dans l'autre langue, pas à l'accueil.
+
+**Workflow de maintenance** (aucun build au déploiement — les pages sont
+commitées telles quelles, Netlify sert la racine) :
+
+```bash
+# 1. Éditer le contenu dans scripts/pages-data.mjs (ou le chrome des accueils)
+npm run pages          # 2. régénère les 24 pages + sitemap.xml
+npm run check          # 3. vérifie SEO, hreflang, JSON-LD, maillage, NAP…
+npm run pages:check    # 4. (CI) échoue si une page commitée diffère de la génération
+npm run seo:score      # 5. note SEO technique /100 (38 critères) — voir plus bas
+```
+
+Le générateur **extrait le chrome des pages d'accueil** (header, footer, contact,
+CTA, graphe d'entités) : une seule source de vérité, pas de dérive. Ne pas éditer
+les pages `*/services/*/index.html` à la main : elles sont régénérées.
 
 ## Servir le site
 
@@ -107,7 +152,10 @@ Le site seul ne suffit pas : Google relie les sources entre elles.
    | AR | `نهج فيكتور هوجو — عمارة محجوب، الطابق الرابع — سوسة، الجمهورية التونسية` |
 3. La page **Facebook** est déjà déclarée en `sameAs` : le nom de la page doit
    correspondre, sinon le lien n'apporte rien.
-4. Bump du cache-busting (`?v=`) si `assets/img/og.jpg` change de contenu.
+4. Si `assets/img/og-v4.jpg` change de contenu, **renommer le fichier** en
+   `og-v5.jpg` (nom versionné, jamais de query string `?v=` sur l'URL OG : les
+   crawlers sociaux la mettent en cache telle quelle) et régénérer avec
+   `npm run pages` + mettre à jour les 3 accueils.
 
 Balises en place : `<title>` ≤ 68 caractères, `meta description` 120–175,
 `og:image` avec `width`/`height`/`alt`, `og:locale` + `og:locale:alternate` par
@@ -116,7 +164,7 @@ langue, JSON-LD parsé et validé par la CI.
 ### Les visuels portent aussi le nom
 
 `assets/img/office.jpg` (hero) affiche une plaque nominative «إبراهيم المجدوب» et
-`assets/img/og.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
+`assets/img/og-v4.jpg` (carte de partage) imprime « Ibrahim Majdoub — Avocat à la
 Cour ». Ces graphies **ne doivent pas être supprimées des images** mais être
 déclarées dans `alternateName`, sinon Google traite l'image comme une entité
 étrangère. Les `alt` décrivent ce que l'image montre réellement (plaque, robe,
@@ -134,8 +182,9 @@ l'entité, il ne promet pas d'affichage dans la SERP.
 
 ## Modifier le contenu
 
-Chaque page est autonome : ouvrez-la et éditez le texte directement. Les trois
-pages partagent la même structure de sections —
+**Pages d'accueil** (`/`, `/en/`, `/ar/`) : chaque page est autonome, ouvrez-la
+et éditez le texte directement. Les trois pages partagent la même structure de
+sections —
 
 1. **hero** (badge, titre, lead, 2 CTA, 3 repères, image, bandeau de 4 compteurs)
 2. **citation** (bandeau sombre)
@@ -146,7 +195,12 @@ pages partagent la même structure de sections —
 7. **contact** (composeur honnête + coordonnées)
 8. **pied de page** (navigation, coordonnées, mentions légales dépliables)
 
-— donc une modification de structure se reporte sur les 3 fichiers.
+— donc une modification de structure se reporte sur les 3 fichiers, puis
+`npm run pages` propage le chrome aux 24 pages services.
+
+**Pages services** : tout le contenu vit dans `scripts/pages-data.mjs` (titres,
+descriptions, leads, missions, déroulement, FAQ, par langue). Éditez ce fichier
+et relancez `npm run pages` — ne touchez pas aux HTML générés.
 
 ## Le formulaire est honnête par construction
 
@@ -183,5 +237,37 @@ l'hébergement dans les mentions légales et déclarer le traitement à l'INPDP.
 ## CI
 
 `.github/workflows/ci.yml` exécute `npm run check` : présence et `lang`/`dir`
-des 3 pages, hreflang + canonical, ancres internes résolues, assets locaux
-présents, labels de formulaire appariés.
+des 3 accueils **et des 24 pages services**, hreflang + canonical réciproques,
+ancres internes résolues, assets locaux présents, labels de formulaire appariés,
+title/description calibrés, JSON-LD (WebPage, Service/ItemList, BreadcrumbList,
+FAQPage alignée sur le visible), maillage interne, NAP et isolation bidi AR.
+Puis `npm run pages:check` échoue si une page services commitée diffère de ce que
+produirait `npm run pages` (anti-dérive data → HTML).
+Enfin `npm run seo:score -- --strict` échoue si la note SEO technique tombe
+sous 100/100.
+
+## Score SEO technique (`npm run seo:score`)
+
+`scripts/seo-score.mjs` vérifie **38 critères réels** sur les 27 pages et produit
+une note /100, groupée en 5 catégories :
+
+| Catégorie | Critères | Exemples |
+| --- | --- | --- |
+| A. Indexabilité & crawl | 6 | robots.txt, canonical, hreflang, sitemap, robots meta |
+| B. Métadonnées & partage | 10 | title/description calibrés + uniques, OG/Twitter complets, image OG versionnée |
+| C. Contenu & structure | 7 | h1 unique marque+ville, alt + dimensions images, NAP, graphie canonique |
+| D. Données structurées | 5 | JSON-LD valide, WebPage, Service/Breadcrumb, FAQ alignée, graphe d'entités |
+| E. Performance & technique | 10 | preload LCP, WebP, liens/assets non cassés, 404 noindex, bidi AR, headers sécurité |
+
+`npm run seo:score` affiche le détail ; `--strict` sort en code 1 si < 100 (CI).
+**Périmètre honnête** : cette note mesure le SEO *on-site* contrôlable par le
+code. Elle ne mesure pas le hors-site (avis Google, backlinks, fiche Business
+Profile), qui dépend d'actions humaines — voir `AUDIT-SEO.md`.
+
+## Page 404
+
+`404.html` est une vraie page d'erreur trilingue (`noindex,follow`), avec liens
+de retour accueil / services / contact. `netlify.toml` la sert avec le statut
+**404** (pas de « soft-404 » qui renverrait l'accueil). Des en-têtes de sécurité
+sûrs sont ajoutés (`X-Content-Type-Options`, `Referrer-Policy`,
+`Permissions-Policy`) — sans `X-Frame-Options` pour ne pas bloquer l'intégration.

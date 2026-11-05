@@ -9,3 +9,6 @@ package.json
 package-lock.json
 README.md
 .github
+# Visuels non référencés par le site (audit SEO, point 12) : hors déploiement.
+assets/img/hero.jpg
+assets/img/hero.webp
